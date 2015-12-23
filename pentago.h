@@ -56,20 +56,25 @@ namespace pentago
             uint8_t mV;
     };
     
+    // 4 bit board byte layout
+    // [123-456-][789-ABC-]
+    // simplifies get/set code
+    // as it gives exact 2/byte
+    
     class board
     {
         public:
             board() 
             {
-                memset(mV,0,12);
+                memset(mV,0,18);
             }
             
             state get(position p)const
             {
-                int b = 3*p.get();
+                int b = bits_per*p.get();
                 int bit = b%8;
                 int byte = b/8;
-                int mask = (3 << bit);
+                int mask = (7 << bit);
                 int result = (mV[byte] & mask);
                 result = result >> bit;
                 return (state)(result);
@@ -83,7 +88,7 @@ namespace pentago
             
             void set(position p, state s)
             {
-                int b = 3*p.get();
+                int b = bits_per*p.get();
                 int bit = b%8;
                 int byte = b/8;
                 mV[byte] |= (s << bit);
@@ -96,7 +101,11 @@ namespace pentago
             }
             
         private:
-            uint8_t mV[12];
+            // 3 bits per node gives misaligned bytes
+            // (get/set more complicated) but 12b array
+            // 4 bits per locale wastes 6 bytes with 18b array
+            static const int bits_per = 4; 
+            uint8_t mV[18];
     };
 }
 
