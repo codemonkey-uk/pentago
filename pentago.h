@@ -74,9 +74,7 @@ namespace pentago
                 int b = bits_per*p.get();
                 int bit = b%8;
                 int byte = b/8;
-                int mask = (7 << bit);
-                int result = (mV[byte] & mask);
-                result = result >> bit;
+                int result = (mV[byte] >> bit) & bit_mask;
                 return (state)(result);
             }
             
@@ -105,6 +103,7 @@ namespace pentago
             // (get/set more complicated) but 12b array
             // 4 bits per locale wastes 6 bytes with 18b array
             static const int bits_per = 4; 
+            static const int bit_mask = 7;
             uint8_t mV[18];
     };
 }
