@@ -61,10 +61,15 @@ namespace pentago
     // simplifies get/set code
     // as it gives exact 2/byte
     
-    class board
+    class board_18
     {
         public:
-            board() 
+            board_18()
+            {
+                clear();
+            }
+        
+            void clear()
             {
                 memset(mV,0,18);
             }
@@ -91,6 +96,27 @@ namespace pentago
                 int byte = b/8;
                 mV[byte] |= (s << bit);
             }
+
+            void clear(position p)
+            {
+                int b = bits_per*p.get();
+                int bit = b%8;
+                int byte = b/8;
+                mV[byte] &= ~(bit_mask << bit);
+            }
+            
+            // clear and set
+            void setx(position p, state s)
+            {
+                int b = bits_per*p.get();
+                int bit = b%8;
+                int byte = b/8;
+                mV[byte] &= ~(bit_mask << bit);
+                mV[byte] |= (s << bit);
+            }
+            
+            void transpose_a();
+            // void transpose_an();
             
             void set(int x, int y, state s)
             {
@@ -106,6 +132,8 @@ namespace pentago
             static const int bit_mask = 7;
             uint8_t mV[18];
     };
+    
+    typedef board_18 board;
 }
 
 #endif
