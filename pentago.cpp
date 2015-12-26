@@ -289,7 +289,7 @@ namespace pentago
         return empty;
     }
     
-    state board_18::winningdiag()
+    state board_18::winningdiag()const
     {
         // 6 ways to win on the diag
         // center 0,0-5,5 line
@@ -335,5 +335,17 @@ namespace pentago
             result = (state)(result | r);
 
         return result;
+    }
+    
+    state board_18::winning()const
+    {
+        // both players can win at the same time
+        state rc = empty, rr = empty;
+        for (int n=0;n!=6;++n)
+        {
+            rr = (state)(rr | winningrow(n));
+            rc = (state)(rc | winningcol(n));
+        }
+        return (state)(rc | rr | winningdiag());
     }
 }

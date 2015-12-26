@@ -470,12 +470,14 @@ int main(int argc, char** argv)
     b.setx( position(0,4), white );
     if (verbose) printboard(b);
     assert( b.winningrow(0)==white );
+    assert( b.winning()==white );
     
     // win on 5 for black
     b.setx( position(5,3), black );
     b.setx( position(5,4), black );
     if (verbose) printboard(b);
     assert( b.winningrow(5)==black );
+    assert( b.winning()==invalid );
     
     // adjust board set up to test wins on columns
     b.transpose_c();
@@ -498,13 +500,15 @@ int main(int argc, char** argv)
         "......\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==white );
-
+    assert( b.winning()==white );
+    
     // break the win and check it again
     b.transpose_a();
     b.transpose_d();
     if (verbose) printboard(b);
     assert( b.winningdiag()==empty );
-
+    assert( b.winning()==empty );
+    
     // check another diagnal win
     b = create(
         "......\n"
@@ -521,7 +525,8 @@ int main(int argc, char** argv)
     b.transpose_d();
     if (verbose) printboard(b);
     assert( b.winningdiag()==empty );
-
+    assert( b.winning()==empty );
+    
     b = create(
         "......\n"
         "O.....\n"
@@ -531,7 +536,8 @@ int main(int argc, char** argv)
         "....O.\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==white );
-
+    assert( b.winning()==white );
+    
     b = create(
         ".X....\n"
         "..X...\n"
@@ -541,6 +547,7 @@ int main(int argc, char** argv)
         "......\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==black );
+    assert( b.winning()==black );
     
     b = create(
         "......\n"
@@ -551,7 +558,8 @@ int main(int argc, char** argv)
         "X.....\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==black );
-
+    assert( b.winning()==black );
+    
     b = create(
         ".....O\n"
         "....O.\n"
@@ -561,7 +569,8 @@ int main(int argc, char** argv)
         "......\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==white );
-
+    assert( b.winning()==white );
+    
     b = create(
         "....O.\n"
         "...O..\n"
@@ -571,7 +580,8 @@ int main(int argc, char** argv)
         "......\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==white );
-
+    assert( b.winning()==white );
+    
     b = create(
         "......\n"
         ".....X\n"
@@ -581,7 +591,8 @@ int main(int argc, char** argv)
         ".X....\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==black );
-
+    assert( b.winning()==black );
+    
     // double wins (ties)
     b = create(
         "....O.\n"
@@ -592,7 +603,8 @@ int main(int argc, char** argv)
         ".X....\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==invalid );
-
+    assert( b.winning()==invalid );
+    
     b = create(
         ".X....\n"
         ".OX...\n"
@@ -602,6 +614,7 @@ int main(int argc, char** argv)
         ".....O\n");
     if (verbose) printboard(b);
     assert( b.winningdiag()==invalid );
+    assert( b.winning()==invalid );
     
     return 0;
 }

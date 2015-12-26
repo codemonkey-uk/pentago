@@ -142,11 +142,15 @@ namespace pentago
             void transpose_d();
             void transpose_dr();
 
-            // returns the winning state of any given row (along x axis)
+            // methods to return the winning state of any:
+            // row (along x axis)
+            // column (along y axis)
+            // and diagnal
             // winning being the colour that holds 5 in a row
             state winningrow(int index)const;
             state winningcol(int index)const;
-            state winningdiag();
+            state winningdiag()const;
+            state winning()const;
         
         private:
             // 3 bits per node gives misaligned bytes
