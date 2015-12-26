@@ -262,6 +262,30 @@ namespace pentago
         transpose_d();
         transpose_d();
         transpose_d();
-    }    
+    }
+    
+    state board_18::winningrow(int x)
+    {
+        // [012345]
+        // [?1234?]
+        // winning rows are equal along 1234
+        // AND either 0 or 5
+        const state r = get(x,1);
+        if (r==get(x,2) && r==get(x,3) && r==get(x,4))
+            if (r==get(x,0) || r==get(x,5))
+                return r;
+        
+        return empty;
+    }
 
+    state board_18::winningcol(int y)
+    {
+        // exactly the same logic as rows, but on the other axis
+        const state r = get(1,y);
+        if (r==get(2,y) && r==get(3,y) && r==get(4,y))
+            if (r==get(0,y) || r==get(5,y))
+                return r;
+        
+        return empty;
+    }
 }

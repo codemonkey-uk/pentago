@@ -18,19 +18,20 @@ namespace pentago
     {
         public:
             position() : mV(0) {}
-            position(int x, int y) : mV(0) 
+            position(const position& rhs) : mV(rhs.mV) {}
+            position(int x, int y) : mV(0)
             {
                 set(x,y);
             }
             
             int getx() const 
             {
-                return mV%6;
+                return mV%width;
             }
             
             int gety() const 
             {
-                return mV/6;
+                return mV/width;
             }
             
             int get() const
@@ -40,7 +41,7 @@ namespace pentago
             
             void set(int x, int y)
             {
-                mV = x+y*6;
+                mV = x+y*width;
             }
 
             void setx(int x) 
@@ -53,6 +54,8 @@ namespace pentago
                 set(getx(), y);
             }            
         private:
+            // note, mV is encoded as a "tightly packed" index into the board array
+            static const int width = 6;
             uint8_t mV;
     };
     
@@ -114,7 +117,13 @@ namespace pentago
                 mV[byte] &= ~(bit_mask << bit);
                 mV[byte] |= (s << bit);
             }
-            
+        
+            void set(int x, int y, state s)
+            {
+                position p(x,y);
+                set(p, s);
+            }
+        
             // quadrant rotations, affecting :
             //   aaabbb
             //   aaabbb
@@ -132,13 +141,12 @@ namespace pentago
             void transpose_cr();
             void transpose_d();
             void transpose_dr();
-            
-            void set(int x, int y, state s)
-            {
-                position p(x,y);
-                set(p, s);
-            }
-            
+
+            // returns the winning state of any given row (along x axis)
+            // winning being the colour that holds 5 in a row
+            state winningrow(int index);
+            state winningcol(int index);
+        
         private:
             // 3 bits per node gives misaligned bytes
             // (get/set more complicated) but 12b array

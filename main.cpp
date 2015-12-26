@@ -428,6 +428,35 @@ int main(int argc, char** argv)
         "......\n"
         "......\n"
         "......\n"
-        "XXXOOO\n");         
+        "XXXOOO\n");
+    
+    // not a win
+    assert(b.winningrow(0)==empty);
+    assert(b.winningrow(1)==empty);
+    assert(b.winningrow(5)==empty);
+    
+    // win on 0 for white
+    b.setx( position(0,3), white );
+    b.setx( position(0,4), white );
+    if (verbose) printboard(b);
+    assert( b.winningrow(0)==white );
+    
+    // win on 5 for black
+    b.setx( position(5,3), black );
+    b.setx( position(5,4), black );
+    if (verbose) printboard(b);
+    assert( b.winningrow(5)==black );
+    
+    // adjust board set up to test wins on columns
+    b.transpose_c();
+    b.transpose_d();
+    b.setx( position(1,0), black);
+    b.setx( position(2,0), black);
+    b.setx( position(1,3), black);
+    b.setx( position(2,3), black);
+    if (verbose) printboard(b);
+    assert( b.winningcol(0)==black );
+    assert( b.winningcol(3)==empty );
+    
     return 0;
 }
