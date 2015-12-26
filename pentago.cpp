@@ -31,6 +31,27 @@ namespace pentago
     static const position C4(2,3);
     static const position C5(2,4);
     static const position C6(2,5);
+
+    static const position D1(3,0);
+    static const position D2(3,1);
+    static const position D3(3,2);
+    static const position D4(3,3);
+    static const position D5(3,4);
+    static const position D6(3,5);
+
+    static const position E1(4,0);
+    static const position E2(4,1);
+    static const position E3(4,2);
+    static const position E4(4,3);
+    static const position E5(4,4);
+    static const position E6(4,5);
+    
+    static const position F1(5,0);
+    static const position F2(5,1);
+    static const position F3(5,2);
+    static const position F4(5,3);
+    static const position F5(5,4);
+    static const position F6(5,5);
     
     // A+
     //   1 2 3 4 5 6
@@ -128,5 +149,59 @@ namespace pentago
         transpose_b();
         transpose_b();
         transpose_b();
+    }   
+    
+    // C+
+    //   1 2 3 4 5 6
+    // A 
+    // B 
+    // C 
+    // D F1E1D1
+    // E F2  D2
+    // F F3E3D3
+    
+    // this is as per A+ but with 
+    // C => F
+    // B => E
+    // A => D
+    
+    void board_18::transpose_c()
+    {
+        // D1 = F1
+        state a1 = get(D1);
+        setx( D1, get(F1) );
+        
+        // D2 = E1
+        state a2 = get(D2);
+        setx( D2, get(E1) );
+        
+        // D3 = D1
+        state a3 = get(D3);
+        setx( D3, a1 );
+        
+        // E1 = F3
+        setx( E1, get(F2) );
+        
+        // E3 = D2
+        state b3 = get(E3);
+        setx( E3, a2 );
+        
+        // F1 = F3
+        setx( F1, get(F3) );
+        
+        // F2 = E3
+        setx( F2, b3 );
+        
+        // F3 = D3
+        setx( F3, a3 );
+    }
+    
+    void board_18::transpose_cr()
+    {
+        // placeholder
+        // 3x 90 degree rotations clockwise equals one rotation anticlockwise
+        transpose_c();
+        transpose_c();
+        transpose_c();
     }    
 }

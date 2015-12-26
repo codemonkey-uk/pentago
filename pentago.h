@@ -115,10 +115,21 @@ namespace pentago
                 mV[byte] |= (s << bit);
             }
             
+            // quadrant rotations, affecting :
+            //   aaabbb
+            //   aaabbb
+            //   aaabbb
+            //   cccddd
+            //   cccddd
+            //   cccddd
+            // clockwise rotation by default
+            // method with "r" suffix for counter-clockwise
             void transpose_a();
             void transpose_ar();
             void transpose_b();
             void transpose_br();
+            void transpose_c();
+            void transpose_cr();
             
             void set(int x, int y, state s)
             {
