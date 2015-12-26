@@ -116,7 +116,9 @@ namespace pentago
             }
             
             void transpose_a();
-            // void transpose_an();
+            void transpose_ar();
+            void transpose_b();
+            void transpose_br();
             
             void set(int x, int y, state s)
             {

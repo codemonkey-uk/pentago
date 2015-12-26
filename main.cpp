@@ -46,10 +46,12 @@ void printboard(const board& b)
     printf("%s\n", stringify(b).c_str());
 }
 
-int main()
+int main(int argc, char** argv)
 {
     vector<position> moves;
     moves.reserve(6*6);
+    
+    if (argc>1) verbose = true;
     
     if (verbose) 
     {
@@ -108,10 +110,13 @@ int main()
     b.set( position(0,0), white );
     b.set( position(0,1), white );
     b.set( position(0,2), white );
+    b.set( position(0,3), black );
+    b.set( position(0,4), black );
+    b.set( position(0,5), black );
     
     if (verbose) printboard(b);
     assert( stringify(b) ==
-        "OOO...\n"
+        "OOOXXX\n"
         "......\n"
         "......\n"
         "......\n"
@@ -121,7 +126,7 @@ int main()
     b.transpose_a();
     if (verbose) printboard(b);
     assert( stringify(b) ==
-        "..O...\n"
+        "..OXXX\n"
         "..O...\n"
         "..O...\n"
         "......\n"
@@ -131,7 +136,7 @@ int main()
     b.transpose_a();
     if (verbose) printboard(b);    
     assert( stringify(b) ==
-        "......\n"
+        "...XXX\n"
         "......\n"
         "OOO...\n"
         "......\n"
@@ -141,12 +146,123 @@ int main()
     b.transpose_a();
     if (verbose) printboard(b);    
     assert( stringify(b) ==
-        "O.....\n"
+        "O..XXX\n"
         "O.....\n"
         "O.....\n"
         "......\n"
         "......\n"
         "......\n");    
-    
+
+    // and back again
+    b.transpose_ar();
+    if (verbose) printboard(b);    
+    assert( stringify(b) ==
+        "...XXX\n"
+        "......\n"
+        "OOO...\n"
+        "......\n"
+        "......\n"
+        "......\n");
+        
+    b.transpose_ar();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "..OXXX\n"
+        "..O...\n"
+        "..O...\n"
+        "......\n"
+        "......\n"
+        "......\n");
+
+    b.transpose_ar();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n"); 
+
+    b.transpose_b();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOO..X\n"
+        ".....X\n"
+        ".....X\n"
+        "......\n"
+        "......\n"
+        "......\n"); 
+        
+    b.transpose_b();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOO...\n"
+        "......\n"
+        "...XXX\n"
+        "......\n"
+        "......\n"
+        "......\n");
+
+    b.transpose_b();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOX..\n"
+        "...X..\n"
+        "...X..\n"
+        "......\n"
+        "......\n"
+        "......\n");         
+
+    b.transpose_b();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n");          
+
+    b.transpose_br();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOX..\n"
+        "...X..\n"
+        "...X..\n"
+        "......\n"
+        "......\n"
+        "......\n"); 
+
+    b.transpose_br();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOO...\n"
+        "......\n"
+        "...XXX\n"
+        "......\n"
+        "......\n"
+        "......\n"); 
+
+    b.transpose_br();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOO..X\n"
+        ".....X\n"
+        ".....X\n"
+        "......\n"
+        "......\n"
+        "......\n");
+
+    b.transpose_br();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n");
+        
     return 0;
 }
