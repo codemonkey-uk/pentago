@@ -25,6 +25,21 @@ char tochar( state s )
     }
 }
 
+state fromchar( char c )
+{
+    switch (c) {
+        case '.':
+            return pentago::empty;
+        case 'X':
+            return pentago::black;
+        case 'O':
+            return pentago::white;
+        default:
+            return pentago::invalid;
+    }
+}
+
+
 string stringify(const board& b)
 {
     string result;
@@ -44,6 +59,21 @@ string stringify(const board& b)
 void printboard(const board& b)
 {
     printf("%s\n", stringify(b).c_str());
+}
+
+board create(const char * const v)
+{
+    board result;
+    
+    for(int x=0;x!=6;++x)
+    {
+        for(int y=0;y!=6;++y)
+        {
+            result.set(position(x,y), fromchar(v[x+y*7]));
+        }
+    }
+    
+    return result;
 }
 
 int main(int argc, char** argv)
@@ -457,6 +487,121 @@ int main(int argc, char** argv)
     if (verbose) printboard(b);
     assert( b.winningcol(0)==black );
     assert( b.winningcol(3)==empty );
+    
+    // check a diagnal win
+    b = create(
+        "O.....\n"
+        ".O....\n"
+        "..O...\n"
+        "...O..\n"
+        "....O.\n"
+        "......\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==white );
+
+    // break the win and check it again
+    b.transpose_a();
+    b.transpose_d();
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==empty );
+
+    // check another diagnal win
+    b = create(
+        "......\n"
+        ".X....\n"
+        "..X...\n"
+        "...X..\n"
+        "....X.\n"
+        ".....X\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==black );
+    
+    // break the win and check it again
+    b.transpose_a();
+    b.transpose_d();
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==empty );
+
+    b = create(
+        "......\n"
+        "O.....\n"
+        ".O....\n"
+        "..O...\n"
+        "...O..\n"
+        "....O.\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==white );
+
+    b = create(
+        ".X....\n"
+        "..X...\n"
+        "...X..\n"
+        "....X.\n"
+        ".....X\n"
+        "......\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==black );
+    
+    b = create(
+        "......\n"
+        "....X.\n"
+        "...X..\n"
+        "..X...\n"
+        ".X....\n"
+        "X.....\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==black );
+
+    b = create(
+        ".....O\n"
+        "....O.\n"
+        "...O..\n"
+        "..O...\n"
+        ".O....\n"
+        "......\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==white );
+
+    b = create(
+        "....O.\n"
+        "...O..\n"
+        "..O...\n"
+        ".O....\n"
+        "O.....\n"
+        "......\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==white );
+
+    b = create(
+        "......\n"
+        ".....X\n"
+        "....X.\n"
+        "...X..\n"
+        "..X...\n"
+        ".X....\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==black );
+
+    // double wins (ties)
+    b = create(
+        "....O.\n"
+        "...O.X\n"
+        "..O.X.\n"
+        ".O.X..\n"
+        "O.X...\n"
+        ".X....\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==invalid );
+
+    b = create(
+        ".X....\n"
+        ".OX...\n"
+        "..OX..\n"
+        "...OX.\n"
+        "....OX\n"
+        ".....O\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==invalid );
     
     return 0;
 }

@@ -264,7 +264,7 @@ namespace pentago
         transpose_d();
     }
     
-    state board_18::winningrow(int x)
+    state board_18::winningrow(int x)const
     {
         // [012345]
         // [?1234?]
@@ -278,7 +278,7 @@ namespace pentago
         return empty;
     }
 
-    state board_18::winningcol(int y)
+    state board_18::winningcol(int y)const
     {
         // exactly the same logic as rows, but on the other axis
         const state r = get(1,y);
@@ -287,5 +287,53 @@ namespace pentago
                 return r;
         
         return empty;
+    }
+    
+    state board_18::winningdiag()
+    {
+        // 6 ways to win on the diag
+        // center 0,0-5,5 line
+        // + either side of it
+        // and 0,5-5,0 line
+        // + either side of it
+
+        // both players can win at the same time
+        state result = empty;
+        
+        // center diagnals have the same logic as rows and columns
+        
+        // 0,0-5,5 line
+        state r = get(1,1);
+        if (r==get(2,2) && r==get(3,3) && r==get(4,4))
+            if (r==get(0,0) || r==get(5,5))
+                result = (state)(result | r);
+        
+        // and 0,5-5,0 line
+        r = get(1,4);
+        if (r==get(2,3) && r==get(3,2) && r==get(4,1))
+            if (r==get(0,5) || r==get(5,0))
+                result = (state)(result | r);
+        
+        // 0,1-4,5 line
+        r = get(A2);
+        if (r==get(B3) && r==get(C4) && r==get(D5) && r==get(E6))
+            result = (state)(result | r);
+
+        // 1,0-5,4 line
+        r = get(B1);
+        if (r==get(C2) && r==get(D3) && r==get(E4) && r==get(F5))
+            result = (state)(result | r);
+        
+        // 0,1-5,0
+        r = get(E1);
+        if (r==get(D2) && r==get(C3) && r==get(B4) && r==get(A5))
+            result = (state)(result | r);
+        
+        // 0,4-1,5
+        r = get(F2);
+        if (r==get(E3) && r==get(D4) && r==get(C5) && r==get(B6))
+            result = (state)(result | r);
+
+        return result;
     }
 }
