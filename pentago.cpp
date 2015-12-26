@@ -110,6 +110,11 @@ namespace pentago
     // D
     // E
     // F  
+
+    // this is as per A+ but with 
+    // 1 => 4
+    // 2 => 5
+    // 3 => 6
     
     void board_18::transpose_b()
     {
@@ -204,4 +209,59 @@ namespace pentago
         transpose_c();
         transpose_c();
     }    
+
+    // C+
+    //   1 2 3 4 5 6
+    // A 
+    // B 
+    // C 
+    // D       F4E4D4
+    // E       F5  D5
+    // F       F6E5D6
+    
+    // this is as per A+ but with 
+    // C => F, 1 => 4
+    // B => E, 2 => 5
+    // A => D, 3 => 6
+    
+    void board_18::transpose_d()
+    {
+        // D4 = F4
+        state a4 = get(D4);
+        setx( D4, get(F4) );
+        
+        // D5 = E4
+        state a5 = get(D5);
+        setx( D5, get(E4) );
+        
+        // D6 = D4
+        state a6 = get(D6);
+        setx( D6, a4 );
+        
+        // E4 = F6
+        setx( E4, get(F5) );
+        
+        // E6 = D5
+        state b6 = get(E6);
+        setx( E6, a5 );
+        
+        // F4 = F6
+        setx( F4, get(F6) );
+        
+        // F5 = E6
+        setx( F5, b6 );
+        
+        // F6 = D6
+        setx( F6, a6 );
+    }
+    
+    void board_18::transpose_dr()
+    {
+        // placeholder
+        // 3x 90 degree rotations clockwise equals one rotation anticlockwise
+        transpose_d();
+        transpose_d();
+        transpose_d();
+    }    
+
 }

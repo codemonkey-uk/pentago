@@ -349,6 +349,85 @@ int main(int argc, char** argv)
         "......\n"
         "......\n"
         "XXXOOO\n");
+
+    b.transpose_d();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "...O..\n"
+        "...O..\n"
+        "XXXO..\n");
+
+    b.transpose_d();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "...OOO\n"
+        "......\n"
+        "XXX...\n");   
         
+    b.transpose_d();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        ".....O\n"
+        ".....O\n"
+        "XXX..O\n");   
+
+    b.transpose_d();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "XXXOOO\n"); 
+        
+    b.transpose_dr();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        ".....O\n"
+        ".....O\n"
+        "XXX..O\n");    
+        
+    b.transpose_dr();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "...OOO\n"
+        "......\n"
+        "XXX...\n"); 
+        
+    b.transpose_dr();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "...O..\n"
+        "...O..\n"
+        "XXXO..\n");  
+        
+    b.transpose_dr();
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "OOOXXX\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "XXXOOO\n");         
     return 0;
 }

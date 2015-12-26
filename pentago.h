@@ -130,6 +130,8 @@ namespace pentago
             void transpose_br();
             void transpose_c();
             void transpose_cr();
+            void transpose_d();
+            void transpose_dr();
             
             void set(int x, int y, state s)
             {
