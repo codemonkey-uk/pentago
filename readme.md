@@ -6,7 +6,7 @@ In this project I will explore two complementary research spaces relating to the
 
 https://en.wikipedia.org/wiki/Pentago
 
-This game is a two player game of 5 in a row played on a 6x6 grid,w here the 6x6 grid is made of a 2x2 box of 3x3 spaces.
+This game is a two player game of 5 in a row played on a 6x6 grid, where the 6x6 grid is made of a 2x2 box of 3x3 spaces.
 
 I will explore data structures and algorithms for efficient storage and evaluation of the game state.
 
