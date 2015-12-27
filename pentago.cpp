@@ -414,6 +414,12 @@ namespace pentago
         mR.apply( board );
     }
     
+    void move::undo(board_18* board) const
+    {
+        mR.invert().apply( board );
+        board->clear( mP );
+    }
+    
     move move::fromstring( const char* str )
     {
         position p( str[0]-'A', str[1]-'1' );

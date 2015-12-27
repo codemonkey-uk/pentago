@@ -588,6 +588,9 @@ int main(int argc, char** argv)
     assert( r1.get_quadrant()==rotation::A );
     assert( r1.get_direction()==rotation::anticlockwise );
     
+    assert( r1.invert().get_quadrant()==rotation::A );
+    assert( r1.invert().get_direction()==rotation::clockwise );
+           
     r1.apply(&b);
     if (verbose) printboard(b);
     assert( stringify(b) ==
@@ -601,6 +604,9 @@ int main(int argc, char** argv)
     rotation r2( rotation::B, rotation::clockwise );
     assert( r2.get_quadrant()==rotation::B );
     assert( r2.get_direction()==rotation::clockwise );
+
+    assert( r2.invert().get_quadrant()==rotation::B );
+    assert( r2.invert().get_direction()==rotation::anticlockwise );
     
     r2.apply(&b);
     if (verbose) printboard(b);
@@ -615,6 +621,9 @@ int main(int argc, char** argv)
     rotation r3( rotation::C, rotation::anticlockwise );
     assert( r3.get_quadrant()==rotation::C );
     assert( r3.get_direction()==rotation::anticlockwise );
+
+    assert( r3.invert().get_quadrant()==rotation::C );
+    assert( r3.invert().get_direction()==rotation::clockwise );
     
     r3.apply(&b);
     if (verbose) printboard(b);
@@ -629,7 +638,10 @@ int main(int argc, char** argv)
     rotation r4( rotation::D, rotation::clockwise );
     assert( r4.get_quadrant()==rotation::D );
     assert( r4.get_direction()==rotation::clockwise );
-    
+
+    assert( r4.invert().get_quadrant()==rotation::D );
+    assert( r4.invert().get_direction()==rotation::anticlockwise );
+
     r4.apply(&b);
     if (verbose) printboard(b);
     assert( stringify(b) ==

@@ -211,6 +211,13 @@ namespace pentago
             {
                 return (direction)(mV & 4);            
             }
+
+            rotation invert() const
+            {
+                rotation result(*this);
+                result.mV ^= 4;
+                return result;
+            }
         
             void apply(board_18* board) const
             {
@@ -239,6 +246,7 @@ namespace pentago
         { }
         
         void apply(board_18* board, int turn) const;
+        void undo(board_18* board) const;
         
         position mP;
         rotation mR;
