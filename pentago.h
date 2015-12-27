@@ -161,6 +161,64 @@ namespace pentago
             uint8_t mV[18];
     };
     
+    class rotation
+    {
+        public:
+            // 4 quadrants: 00 = A, 01 = B, 10 = C, 11 = D
+            // 2 directions of spin, 1 bit
+            enum quadrant {
+                A = 0,
+                B = 1,
+                C = 2,
+                D = 3
+            };
+        
+            enum direction {
+                clockwise = 0,
+                anticlockwise = 4
+            };
+        
+            rotation( quadrant q, direction d )
+            {
+                mV = (q | d);
+            }
+        
+            quadrant get_quadrant() const 
+            {
+                return (quadrant)(mV & 3);
+            }
+        
+            direction get_direction() const 
+            {
+                return (direction)(mV & 4);            
+            }
+        
+            void apply(board_18* board) const
+            {
+                typedef void (board_18::*BoardTransformFn)(void);
+                static const BoardTransformFn lut[] = {
+                    &board_18::transpose_a,
+                    &board_18::transpose_b,
+                    &board_18::transpose_c,
+                    &board_18::transpose_d,
+                    &board_18::transpose_ar,
+                    &board_18::transpose_br,
+                    &board_18::transpose_cr,
+                    &board_18::transpose_dr,
+                };
+                ((*board).*(lut[mV]))();
+            }
+        
+        private:
+            uint8_t mV;
+    };
+    
+    struct move
+    {
+        position mP;
+        rotation mV;
+    };
+    
     typedef board_18 board;
 }
 

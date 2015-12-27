@@ -69,7 +69,7 @@ board create(const char * const v)
     {
         for(int y=0;y!=6;++y)
         {
-            result.set(position(x,y), fromchar(v[x+y*7]));
+            result.set(position(x,y), fromchar(v[y+x*7]));
         }
     }
     
@@ -87,6 +87,7 @@ int main(int argc, char** argv)
     {
         printf("board size: %lub.\n", sizeof(board));
         printf("coord size: %lub.\n", sizeof(position));
+        printf("move size: %lub.\n", sizeof(pentago::move));
     }
 
     // create list of all positions, check position type get/set ops
@@ -136,6 +137,15 @@ int main(int argc, char** argv)
         b.clear(moves[m]);
         if (verbose) printf("%i,%i\n", moves[m].getx(), moves[m].gety());
     }
+    
+    const char * example =
+        "O..XXX\n"
+        "O.....\n"
+        "O.....\n"
+        ".....O\n"
+        ".....O\n"
+        "XXX..O\n";
+    assert( stringify( create(example) ) == example );
     
     b.set( position(0,0), white );
     b.set( position(0,1), white );
@@ -615,6 +625,70 @@ int main(int argc, char** argv)
     if (verbose) printboard(b);
     assert( b.winningdiag()==invalid );
     assert( b.winning()==invalid );
+    
+    // test class for rotation encoding in a byte
+    b = create("OOOXXX\n"
+               "......\n"
+               "......\n"
+               ".....O\n"
+               ".....O\n"
+               "XXX..O\n");
+    
+    rotation r1( rotation::A, rotation::anticlockwise );
+    assert( r1.get_quadrant()==rotation::A );
+    assert( r1.get_direction()==rotation::anticlockwise );
+    
+    r1.apply(&b);
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        "O..XXX\n"
+        "O.....\n"
+        "O.....\n"
+        ".....O\n"
+        ".....O\n"
+        "XXX..O\n");
+
+    rotation r2( rotation::B, rotation::clockwise );
+    assert( r2.get_quadrant()==rotation::B );
+    assert( r2.get_direction()==rotation::clockwise );
+    
+    r2.apply(&b);
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+           "O....X\n"
+           "O....X\n"
+           "O....X\n"
+           ".....O\n"
+           ".....O\n"
+           "XXX..O\n");
+    
+    rotation r3( rotation::C, rotation::anticlockwise );
+    assert( r3.get_quadrant()==rotation::C );
+    assert( r3.get_direction()==rotation::anticlockwise );
+    
+    r3.apply(&b);
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+           "O....X\n"
+           "O....X\n"
+           "O....X\n"
+           "..X..O\n"
+           "..X..O\n"
+           "..X..O\n");
+    
+    rotation r4( rotation::D, rotation::clockwise );
+    assert( r4.get_quadrant()==rotation::D );
+    assert( r4.get_direction()==rotation::clockwise );
+    
+    r4.apply(&b);
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+           "O....X\n"
+           "O....X\n"
+           "O....X\n"
+           "..X...\n"
+           "..X...\n"
+           "..XOOO\n");
     
     return 0;
 }
