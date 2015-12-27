@@ -23,7 +23,7 @@ void printboard(const board& b)
 
 board create(const char * const v)
 {   
-    return fromstring(v);
+    return board::fromstring(v);
 }
 
 int main(int argc, char** argv)
@@ -639,6 +639,59 @@ int main(int argc, char** argv)
            "..X...\n"
            "..X...\n"
            "..XOOO\n");
+    
+    b.clear();
+    
+    pentago::move m = move::fromstring("A1A+");
+    assert( tostring( m ) == "A1A+" );
+    assert( m.mP == position(0,0) );
+    assert( m.mR.get_quadrant() == rotation::A );
+    assert( m.mR.get_direction() == rotation::clockwise );
+    
+    int turn = 0;
+    m.apply(&b, turn++);
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+           "..O...\n"
+           "......\n"
+           "......\n"
+           "......\n"
+           "......\n"
+           "......\n");
+    
+    m = move::fromstring("C2A+");
+    assert( tostring( m ) == "C2A+" );
+    assert( m.mP == position(2,1) );
+    assert( m.mR.get_quadrant() == rotation::A );
+    assert( m.mR.get_direction() == rotation::clockwise );
+    
+    m.apply(&b, turn++);
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        //  123456
+           "......\n"  //A
+           "X.....\n"  //B
+           "..O...\n"  //C
+           "......\n"  //D
+           "......\n"  //E
+           "......\n");//F
+    
+    m = move::fromstring("B3D-");
+    assert( tostring( m ) == "B3D-" );
+    assert( m.mP == position(1,2) );
+    assert( m.mR.get_quadrant() == rotation::D );
+    assert( m.mR.get_direction() == rotation::anticlockwise );
+    
+    m.apply(&b, turn++);
+    if (verbose) printboard(b);
+    assert( stringify(b) ==
+        //  123456
+           "......\n"  //A
+           "X.O...\n"  //B
+           "..O...\n"  //C
+           "......\n"  //D
+           "......\n"  //E
+           "......\n");//F
     
     return 0;
 }

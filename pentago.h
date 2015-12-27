@@ -57,7 +57,13 @@ namespace pentago
             void sety(int y)  
             {
                 set(getx(), y);
-            }            
+            }
+        
+            bool operator==(const position& rhs)
+            {
+                return rhs.mV==mV;
+            }
+        
         private:
             // note, mV is encoded as a "tightly packed" index into the board array
             static const int width = 6;
@@ -157,6 +163,8 @@ namespace pentago
             state winningdiag()const;
             state winning()const;
         
+            static board_18 fromstring( const char* str );
+        
         private:
             // 3 bits per node gives misaligned bytes
             // (get/set more complicated) but 12b array
@@ -168,7 +176,6 @@ namespace pentago
     
     typedef board_18 board;
 
-    board fromstring( const char* str );
     std::string tostring( const board& b );
     
     class rotation
@@ -227,10 +234,20 @@ namespace pentago
     
     struct move
     {
+        move( const position& p , const rotation& r )
+            : mP(p), mR(r)
+        { }
+        
+        void apply(board_18* board, int turn) const;
+        
         position mP;
-        rotation mV;
+        rotation mR;
+        
+        static move fromstring( const char* str );
     };
-
+    
+    std::string tostring( const move& b );
+    
 }
 
 #endif

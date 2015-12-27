@@ -377,7 +377,7 @@ namespace pentago
         }
     }
     
-    board fromstring( const char* str )
+    board_18 board_18::fromstring( const char* str )
     {
         board result;
     
@@ -407,4 +407,32 @@ namespace pentago
     
         return result;    
     }
+    
+    void move::apply(board_18* board, int turn) const
+    {
+        board->set( mP, (state)(1+(turn&1)) );
+        mR.apply( board );
+    }
+    
+    move move::fromstring( const char* str )
+    {
+        position p( str[0]-'A', str[1]-'1' );
+        rotation::quadrant q = (rotation::quadrant)( str[2]-'A' );
+        rotation::direction d = (rotation::direction)( str[3]=='+' ? rotation::clockwise : rotation::anticlockwise );
+        
+        move result(p, rotation( q, d));
+        
+        return result;
+    }
+    
+    std::string tostring( const move& b )
+    {
+        std::string result;
+        result.push_back( 'A'+b.mP.getx() );
+        result.push_back( '1'+b.mP.gety() );
+        result.push_back( 'A'+b.mR.get_quadrant() );
+        result.push_back( (b.mR.get_direction()==rotation::clockwise) ? '+' : '-' );
+        return result;
+    }
+
 }
