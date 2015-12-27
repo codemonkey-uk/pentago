@@ -1,8 +1,10 @@
 #ifndef PENTAGO_H_INCLUDED
 #define PENTAGO_H_INCLUDED
 
-#include <stdint.h>
+#include <cstdint>
 #include <cstring>
+
+#include <string>
 
 namespace pentago
 {
@@ -12,6 +14,9 @@ namespace pentago
         black = 2,
         invalid = 3
     };
+    
+    state fromchar( char c );
+    char tochar( state s );
     
     // 0-5 x 0-5
     class position
@@ -126,10 +131,10 @@ namespace pentago
         
             // quadrant rotations, affecting :
             //   aaabbb
-            //   aaabbb
+            //   a-ab-b
             //   aaabbb
             //   cccddd
-            //   cccddd
+            //   c-cd-d
             //   cccddd
             // clockwise rotation by default
             // method with "r" suffix for counter-clockwise
@@ -161,18 +166,25 @@ namespace pentago
             uint8_t mV[18];
     };
     
+    typedef board_18 board;
+
+    board fromstring( const char* str );
+    std::string tostring( const board& b );
+    
     class rotation
     {
         public:
-            // 4 quadrants: 00 = A, 01 = B, 10 = C, 11 = D
-            // 2 directions of spin, 1 bit
+            
+            // rotation, quadrant and direction, stored as a byte
+            
+            // 4 quadrants: 00 = A, 01 = B, 10 = C, 11 = D, 1st & 2nd bits:
             enum quadrant {
                 A = 0,
                 B = 1,
                 C = 2,
                 D = 3
             };
-        
+            // 2 directions of spin, 0, & 1, 3rd bit:
             enum direction {
                 clockwise = 0,
                 anticlockwise = 4
@@ -218,8 +230,7 @@ namespace pentago
         position mP;
         rotation mV;
     };
-    
-    typedef board_18 board;
+
 }
 
 #endif

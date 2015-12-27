@@ -348,4 +348,63 @@ namespace pentago
         }
         return (state)(rc | rr | winningdiag());
     }
+    
+    char tochar( state s )
+    {
+        switch (s) {
+            case pentago::empty:
+                return '.';
+            case pentago::black:
+                return 'X';
+            case pentago::white:
+                return 'O';
+            default:
+                return '#';
+        }
+    }
+
+    state fromchar( char c )
+    {
+        switch (c) {
+            case '.':
+                return pentago::empty;
+            case 'X':
+                return pentago::black;
+            case 'O':
+                return pentago::white;
+            default:
+                return pentago::invalid;
+        }
+    }
+    
+    board fromstring( const char* str )
+    {
+        board result;
+    
+        for(int x=0;x!=6;++x)
+        {
+            for(int y=0;y!=6;++y)
+            {
+                result.set(position(x,y), fromchar(str[y+x*7]));
+            }
+        }  
+        
+        return result;
+    }
+    
+    std::string tostring( const board& b )
+    {
+        std::string result;
+    
+        for(int x=0;x!=6;++x)
+        {
+            for(int y=0;y!=6;++y)
+            {
+                result.push_back( tochar(b.get(x,y)) );
+            }
+            result.push_back('\n');
+        }
+    
+        return result;    
+    }
 }

@@ -11,49 +11,9 @@ using namespace pentago;
 
 bool verbose = false;
 
-char tochar( state s )
-{
-    switch (s) {
-        case pentago::empty:
-            return '.';
-        case pentago::black:
-            return 'X';
-        case pentago::white:
-            return 'O';
-        default:
-            return '#';
-    }
-}
-
-state fromchar( char c )
-{
-    switch (c) {
-        case '.':
-            return pentago::empty;
-        case 'X':
-            return pentago::black;
-        case 'O':
-            return pentago::white;
-        default:
-            return pentago::invalid;
-    }
-}
-
-
 string stringify(const board& b)
 {
-    string result;
-    
-    for(int x=0;x!=6;++x)
-    {
-        for(int y=0;y!=6;++y)
-        {
-            result.push_back( tochar(b.get(x,y)) );
-        }
-        result.push_back('\n');
-    }
-    
-    return result;
+    return tostring(b);
 }
 
 void printboard(const board& b)
@@ -62,18 +22,8 @@ void printboard(const board& b)
 }
 
 board create(const char * const v)
-{
-    board result;
-    
-    for(int x=0;x!=6;++x)
-    {
-        for(int y=0;y!=6;++y)
-        {
-            result.set(position(x,y), fromchar(v[y+x*7]));
-        }
-    }
-    
-    return result;
+{   
+    return fromstring(v);
 }
 
 int main(int argc, char** argv)
