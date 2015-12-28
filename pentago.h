@@ -177,6 +177,7 @@ namespace pentago
     typedef board_18 board;
 
     std::string tostring( const board& b );
+    std::string tostring_fancy( const board& b );
     
     class rotation
     {

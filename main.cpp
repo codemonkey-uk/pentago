@@ -18,7 +18,7 @@ string stringify(const board& b)
 
 void printboard(const board& b)
 {
-    printf("%s\n", stringify(b).c_str());
+    printf("%s\n", tostring_fancy(b).c_str());
 }
 
 board create(const char * const v)

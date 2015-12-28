@@ -408,6 +408,28 @@ namespace pentago
         return result;    
     }
     
+    std::string tostring_fancy( const board& b )
+    {
+        std::string result;
+    
+        result = "  1 2 3 4 5 6\n";
+        for(int x=0;x!=6;++x)
+        {
+            result.push_back('A'+x);
+            for(int y=0;y!=6;++y)
+            {
+                result += (y==3) ? '|' : ' ';
+                result.push_back( tochar(b.get(x,y)) );
+                
+            }
+            if (x==2)
+                result += "\n  -----------";
+            result.push_back('\n');
+        }
+    
+        return result;    
+    }
+    
     void move::apply(board_18* board, int turn) const
     {
         board->set( mP, (state)(1+(turn&1)) );
