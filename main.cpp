@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+#include<iostream>
+
 using namespace std;
 using namespace pentago;
 
@@ -24,6 +26,30 @@ void printboard(const board& b)
 board create(const char * const v)
 {   
     return board::fromstring(v);
+}
+
+void interactive()
+{
+    board b;
+    int turn = 0;
+    while (b.winning()==empty)
+    {
+        printboard(b);
+        
+        string movestr;
+        while (movestr.length()!=4)
+        {
+            cout << tochar( turntostate(turn) ) << " to play: ";
+            cin >> movestr;
+        }
+        
+        move::fromstring(movestr.c_str()).apply( &b, turn++ );
+    }
+    
+    if (b.winning()==invalid)
+        cout << "Draw!";
+    else
+        cout << tochar(b.winning()) << " wins.";
 }
 
 int main(int argc, char** argv)
@@ -704,6 +730,8 @@ int main(int argc, char** argv)
            "......\n"  //D
            "......\n"  //E
            "......\n");//F
+    
+    if (verbose) interactive();
     
     return 0;
 }

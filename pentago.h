@@ -18,6 +18,11 @@ namespace pentago
     state fromchar( char c );
     char tochar( state s );
     
+    inline state turntostate(int turn)
+    {
+        return (state)(1+(turn&1));
+    }
+    
     // 0-5 x 0-5
     class position
     {

@@ -432,8 +432,9 @@ namespace pentago
     
     void move::apply(board_18* board, int turn) const
     {
-        board->set( mP, (state)(1+(turn&1)) );
-        mR.apply( board );
+        board->set( mP, turntostate(turn) );
+        if (board->winning()==empty)
+            mR.apply( board );
     }
     
     void move::undo(board_18* board) const
@@ -444,9 +445,11 @@ namespace pentago
     
     move move::fromstring( const char* str )
     {
-        position p( str[0]-'A', str[1]-'1' );
-        rotation::quadrant q = (rotation::quadrant)( str[2]-'A' );
-        rotation::direction d = (rotation::direction)( str[3]=='+' ? rotation::clockwise : rotation::anticlockwise );
+        position p( toupper(str[0])-'A', str[1]-'1' );
+        rotation::quadrant q = (rotation::quadrant) (toupper(str[2])-'A');
+        rotation::direction d = (rotation::direction) (str[3]==0 || str[3]=='+' || isspace(str[3]))
+            ? rotation::clockwise
+            : rotation::anticlockwise;
         
         move result(p, rotation( q, d));
         
