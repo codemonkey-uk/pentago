@@ -11,8 +11,6 @@
 using namespace std;
 using namespace pentago;
 
-bool verbose = false;
-
 string stringify(const board& b)
 {
     return tostring(b);
@@ -28,36 +26,67 @@ board create(const char * const v)
     return board::fromstring(v);
 }
 
+bool valid_move(const string& rhs)
+{
+    // valid moves are always 3 or 4 characters
+    if (rhs.length()<3) return false;
+    if (rhs.length()>4) return false;
+    
+    // Position [A-F][1-6]
+    if (toupper(rhs[0])>'F') return false;
+    if (toupper(rhs[0])<'A') return false;
+    if (rhs[1]>'6') return false;
+    if (rhs[1]<'1') return false;
+    
+    // Quadrant A,B,C, or D
+    if (toupper(rhs[2])>'D') return false;
+    if (toupper(rhs[2])<'A') return false;
+
+    // Direction (optional) + or -
+    if (rhs.length()==4 && (rhs[3]!='+' && rhs[3]!='-'))
+        return false;
+    
+    return true;
+}
+
 void interactive()
 {
     board b;
     int turn = 0;
+    
     while (b.winning()==empty)
     {
         printboard(b);
         
         string movestr;
-        while (movestr.length()!=4)
+        while (valid_move(movestr)==false)
         {
             cout << tochar( turntostate(turn) ) << " to play: ";
             cin >> movestr;
+            
+            // quit
+            if (movestr=="q" || movestr=="Q")
+                return;
         }
         
         move::fromstring(movestr.c_str()).apply( &b, turn++ );
     }
     
+    // show final board state
+    printboard(b);
+    
+    // call it
     if (b.winning()==invalid)
         cout << "Draw!";
     else
         cout << tochar(b.winning()) << " wins.";
+    cout << endl;
 }
 
-int main(int argc, char** argv)
+void run_tests(bool verbose)
 {
     vector<position> moves;
     moves.reserve(6*6);
-    
-    if (argc>1) verbose = true;
     
     if (verbose) 
     {
@@ -730,8 +759,27 @@ int main(int argc, char** argv)
            "......\n"  //D
            "......\n"  //E
            "......\n");//F
+}
+
+int main(int argc, char** argv)
+{
+    bool verbose = false;
+    bool test = false;
     
-    if (verbose) interactive();
+    for (int i=1; i!=argc; ++i)
+    {
+        const char * str = argv[i];
+        while (*str=='-') ++str;
+        if (strcmp(str,"test")==0)
+            test = true;
+        else if (strcmp(str,"v")==0)
+            verbose = true;
+        else if (strcmp(str,"verbose")==0)
+            verbose = true;
+        else
+            cout << "ignoring unrecognised argument: " << str << endl;
+    }
     
-    return 0;
+    if (test) run_tests(verbose);
+    else interactive();
 }
