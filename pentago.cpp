@@ -465,5 +465,43 @@ namespace pentago
         result.push_back( (b.mR.get_direction()==rotation::clockwise) ? '+' : '-' );
         return result;
     }
-
+    
+    void empty_positions::next()
+    {
+        do
+        {
+            step();
+        }while(!finished() && !valid());
+    }
+    
+    position empty_positions::get()
+    {
+        return mP;
+    }
+    
+    bool empty_positions::finished()
+    {
+        return mP.gety()>=6;
+    }
+    
+    bool empty_positions::valid()
+    {
+        return mB.get(mP) == empty;
+    }
+    
+    void empty_positions::step()
+    {
+        int x = mP.getx();
+        int y = mP.gety();
+        
+        x++;
+        if (x>5)
+        {
+            x = 0;
+            y++;
+        }
+        
+        mP.set(x,y);
+    }
+            
 }

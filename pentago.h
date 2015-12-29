@@ -261,7 +261,29 @@ namespace pentago
     };
     
     std::string tostring( const move& b );
+
+    // move_generator
     
+    class empty_positions
+    {
+        public:
+            empty_positions( const board& b )
+                : mB(b)
+                , mP(0,0)
+            { 
+                if (!valid()) next();
+            }
+        
+            void next();
+            position get();
+            bool finished();
+            
+        private:
+            bool valid();
+            void step();
+            const board& mB;
+            position mP;
+    };
 }
 
 #endif

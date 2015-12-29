@@ -49,6 +49,13 @@ bool valid_move(const string& rhs)
     return true;
 }
 
+pentago::move ai(const board& b)
+{
+    // placeholder code
+    empty_positions p(b);
+    return pentago::move( p.get(), rotation( rotation::A, rotation::clockwise ) );
+}
+
 void interactive()
 {
     board b;
@@ -67,6 +74,9 @@ void interactive()
             // quit
             if (movestr=="q" || movestr=="Q")
                 return;
+                
+            if (movestr=="ai")
+                movestr = tostring( ai(b) );
         }
         
         move::fromstring(movestr.c_str()).apply( &b, turn++ );
@@ -759,6 +769,22 @@ void run_tests(bool verbose)
            "......\n"  //D
            "......\n"  //E
            "......\n");//F
+    
+    // simple test for empty positions generator
+    empty_positions itr(b);
+    assert( itr.get()==position(0,0) );
+    assert( itr.finished()==false );
+    
+    int c=0;
+    while (itr.finished()==false)
+    {
+        c++;
+        if (verbose) printf( "%c%c, ", 'A'+itr.get().getx(), '1'+itr.get().gety() );
+        itr.next();
+    }
+    if (verbose) printf(": c==%i\n",c);
+    assert( c == (6*6)-3 );
+    
 }
 
 int main(int argc, char** argv)
