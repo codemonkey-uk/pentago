@@ -348,7 +348,7 @@ namespace pentago
         }
         return (state)(rc | rr | winningdiag());
     }
-    
+            
     char tochar( state s )
     {
         switch (s) {

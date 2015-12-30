@@ -49,11 +49,39 @@ bool valid_move(const string& rhs)
     return true;
 }
 
-pentago::move ai(const board& b)
+vector< pentago::move > all_moves(const board& b, int turn)
+{
+    vector< pentago::move > moves;
+    moves.reserve( (6*6*4*2)-turn );
+    
+    // simple test for empty positions generator
+    empty_positions itr(b);
+    
+    while (itr.finished()==false)
+    {
+        position p = itr.get();
+        rotation r;
+        while (r.valid())
+        {
+            moves.push_back( pentago::move( p, r ) );
+            r.next();
+        }
+        itr.next();
+    }
+    
+    return moves;
+}
+
+pentago::move random_move(const board& b, int turn)
+{
+    vector< pentago::move > moves = all_moves(b, turn);
+    return moves[rand()%moves.size()];
+}
+
+pentago::move ai(const board& b, int turn)
 {
     // placeholder code
-    empty_positions p(b);
-    return pentago::move( p.get(), rotation( rotation::A, rotation::clockwise ) );
+    return random_move(b, turn);
 }
 
 void interactive()
@@ -76,7 +104,10 @@ void interactive()
                 return;
                 
             if (movestr=="ai")
-                movestr = tostring( ai(b) );
+            {
+                movestr = tostring( ai(b, turn) );
+                cout << "ai selects: " << movestr << endl;
+            }
         }
         
         move::fromstring(movestr.c_str()).apply( &b, turn++ );

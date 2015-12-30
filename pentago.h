@@ -203,10 +203,13 @@ namespace pentago
                 anticlockwise = 4
             };
         
+            rotation()
+                : mV(0)
+            { }
+            
             rotation( quadrant q, direction d )
-            {
-                mV = (q | d);
-            }
+                : mV(q | d)
+            { }
         
             quadrant get_quadrant() const 
             {
@@ -239,6 +242,16 @@ namespace pentago
                     &board_18::transpose_dr,
                 };
                 ((*board).*(lut[mV]))();
+            }
+            
+            void next()
+            {
+                ++mV;
+            }
+            
+            bool valid() const
+            {
+                return mV<8;
             }
         
         private:
