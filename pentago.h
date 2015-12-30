@@ -264,6 +264,9 @@ namespace pentago
             : mP(p), mR(r)
         { }
         
+        // default ctor required for vector.resize(0) to compile
+        move() : mP(0,0), mR() { }
+        
         void apply(board_18* board, int turn) const;
         void undo(board_18* board) const;
         

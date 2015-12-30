@@ -11,6 +11,8 @@
 using namespace std;
 using namespace pentago;
 
+bool autoai[2] = {false, false};
+
 string stringify(const board& b)
 {
     return tostring(b);
@@ -49,10 +51,10 @@ bool valid_move(const string& rhs)
     return true;
 }
 
-vector< pentago::move > all_moves(const board& b, int turn)
+void all_moves(const board& b, int turn, vector< pentago::move >* moves)
 {
-    vector< pentago::move > moves;
-    moves.reserve( (6*6*4*2)-turn );
+    moves->reserve( (6*6*4*2)-turn );
+    moves->resize( 0 );
     
     // simple test for empty positions generator
     empty_positions itr(b);
@@ -63,25 +65,65 @@ vector< pentago::move > all_moves(const board& b, int turn)
         rotation r;
         while (r.valid())
         {
-            moves.push_back( pentago::move( p, r ) );
+            moves->push_back( pentago::move( p, r ) );
             r.next();
         }
         itr.next();
     }
-    
-    return moves;
 }
 
 pentago::move random_move(const board& b, int turn)
 {
-    vector< pentago::move > moves = all_moves(b, turn);
+    static vector< pentago::move > moves;
+    all_moves(b, turn, &moves);
+    
     return moves[rand()%moves.size()];
+}
+
+pentago::move best_move(const board& b, int turn)
+{
+    vector< pentago::move > moves;
+    all_moves(b, turn, &moves);
+    
+    vector< int > score;
+    score.resize( moves.size() );
+
+    for (int s=0;s!=128;++s)
+    {
+        for (int m=0;m!=moves.size();++m)
+        {
+            board b2 = b;
+            int t2 = turn;
+            
+            moves[m].apply(&b2, t2++);
+            while(b2.winning()==empty && t2<6*6)
+            {
+                random_move(b2,t2).apply(&b2,t2);
+                t2++;
+            }
+            
+            state result = b2.winning();
+            if (result==turntostate(turn))
+                score[m]++;
+            else if (result==turntostate(turn+1))
+                score[m]--;
+            
+        }
+    }
+    
+    int best = 0;
+    for (int m=1;m!=moves.size();++m)
+    {
+        // cout << tostring(moves[m]) << " " << score[m] << endl;
+        if (score[m]>score[best]) best = m;
+    }
+    
+    return moves[best];
 }
 
 pentago::move ai(const board& b, int turn)
 {
-    // placeholder code
-    return random_move(b, turn);
+    return best_move(b, turn);
 }
 
 void interactive()
@@ -97,7 +139,15 @@ void interactive()
         while (valid_move(movestr)==false)
         {
             cout << tochar( turntostate(turn) ) << " to play: ";
-            cin >> movestr;
+            
+            if (autoai[turn&1])
+            {
+                movestr = "ai";
+            }
+            else
+            {
+                cin >> movestr;
+            }
             
             // quit
             if (movestr=="q" || movestr=="Q")
@@ -833,6 +883,10 @@ int main(int argc, char** argv)
             verbose = true;
         else if (strcmp(str,"verbose")==0)
             verbose = true;
+        else if (strcmp(str,"ai1"))
+            autoai[0] = true;
+        else if (strcmp(str,"ai0"))
+            autoai[1] = true;
         else
             cout << "ignoring unrecognised argument: " << str << endl;
     }
