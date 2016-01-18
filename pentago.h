@@ -157,7 +157,14 @@ namespace pentago
             void transpose_cr();
             void transpose_d();
             void transpose_dr();
-
+            
+            // per quadrant tests for rotational symmetry
+            // returns true if transpose_X == transpose_Xr
+            bool symetrical_a() const;
+            bool symetrical_b() const;
+            bool symetrical_c() const;
+            bool symetrical_d() const;
+            
             // methods to return the winning state of any:
             // row (along x axis)
             // column (along y axis)
@@ -242,6 +249,18 @@ namespace pentago
                     &board_18::transpose_dr,
                 };
                 ((*board).*(lut[mV]))();
+            }
+            
+            bool symetrical(const board_18* board) const
+            {
+                typedef bool (board_18::*BoardFn)(void)const;
+                static const BoardFn lut[] = {
+                    &board_18::symetrical_a,
+                    &board_18::symetrical_b,
+                    &board_18::symetrical_c,
+                    &board_18::symetrical_d,
+                };
+                return ((*board).*(lut[get_quadrant()]))();            
             }
             
             void next()

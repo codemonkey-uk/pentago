@@ -210,7 +210,7 @@ namespace pentago
         transpose_c();
     }    
 
-    // C+
+    // D+
     //   1 2 3 4 5 6
     // A 
     // B 
@@ -263,6 +263,72 @@ namespace pentago
         transpose_d();
         transpose_d();
     }
+    
+    // Rotational symmetry in the A quadrant:
+    //   1 2 3 4 5 6
+    // A C3C2C1
+    // B B3  B1
+    // C A3A2A1
+    // D
+    // E
+    // F
+    // returns true if transpose_a == transpose_ar
+    bool board_18::symetrical_a() const
+    {
+        // A1 = C1
+        return 
+            get(A1) == get(C3) &&
+            get(A2) == get(C2) &&
+            get(A3) == get(C1) &&
+            get(B3) == get(B1);
+    }
+    
+    // Rotational symmetry in the B quadrant:
+    // this is as per A but with 
+    // 1 => 4
+    // 2 => 5
+    // 3 => 6
+    // returns true if transpose_b == transpose_br
+    bool board_18::symetrical_b() const
+    {
+        // A1 = C1
+        return 
+            get(A4) == get(C6) &&
+            get(A5) == get(C5) &&
+            get(A6) == get(C4) &&
+            get(B6) == get(B4);
+    }
+    
+    // Rotational symmetry in the C quadrant:
+    // this is as per A but with 
+    // C => F
+    // B => E
+    // A => D
+    // returns true if transpose_c == transpose_cr
+    bool board_18::symetrical_c() const
+    {
+        return 
+            get(D1) == get(F3) &&
+            get(D2) == get(F2) &&
+            get(D3) == get(F1) &&
+            get(E3) == get(E1);
+    }
+    
+    // Rotational symmetry in the D quadrant:
+    // this is as per A+ but with 
+    // C => F, 1 => 4
+    // B => E, 2 => 5
+    // A => D, 3 => 6
+    // returns true if transpose_c == transpose_cr
+    bool board_18::symetrical_d() const
+    {
+        return 
+            get(D4) == get(F6) &&
+            get(D5) == get(F5) &&
+            get(D6) == get(F4) &&
+            get(E6) == get(E4);
+    }    
+    
     
     state board_18::winningrow(int x)const
     {

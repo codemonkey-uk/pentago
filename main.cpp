@@ -65,7 +65,12 @@ void all_moves(const board& b, int turn, vector< pentago::move >* moves)
         rotation r;
         while (r.valid())
         {
-            moves->push_back( pentago::move( p, r ) );
+            // filter out anti-clockwise rotations of symmetrical quadrants
+            if (r.get_direction()==rotation::clockwise ||
+                r.symetrical(&b)==false)
+            {
+                moves->push_back( pentago::move( p, r ) );
+            }
             r.next();
         }
         itr.next();
@@ -729,7 +734,7 @@ void run_tests(bool verbose)
                ".....O\n"
                ".....O\n"
                "XXX..O\n");
-    
+
     rotation r1( rotation::A, rotation::anticlockwise );
     assert( r1.get_quadrant()==rotation::A );
     assert( r1.get_direction()==rotation::anticlockwise );
@@ -866,6 +871,78 @@ void run_tests(bool verbose)
     if (verbose) printf(": c==%i\n",c);
     assert( c == (6*6)-3 );
     
+    // test checks for rotational symmetry
+    assert( create(
+        ".X....\n"
+        ".OX...\n"
+        "..OX..\n"
+        "...OX.\n"
+        "....OX\n"
+        ".....O\n").symetrical_a() == false
+    );
+    
+    assert( create(
+        "......\n"
+        ".O....\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n").symetrical_a() == true
+    );    
+
+    assert( create(
+        ".X....\n"
+        "O.O...\n"
+        ".X....\n"
+        "......\n"
+        "......\n"
+        "......\n").symetrical_a() == true
+    );    
+
+    assert( create(
+        ".X....\n"
+        "O.O...\n"
+        ".XX...\n"
+        "......\n"
+        "......\n"
+        "......\n").symetrical_a() == false
+    );
+    
+    assert( create(
+        "....X.\n"
+        "....OX\n"
+        ".....O\n"
+        "...OX.\n"
+        "....OX\n"
+        ".....O\n").symetrical_b() == false
+    );
+    
+    assert( create(
+        "......\n"
+        "....O.\n"
+        "......\n"
+        "......\n"
+        "......\n"
+        "......\n").symetrical_b() == true
+    );    
+
+    assert( create(
+        "....X.\n"
+        "...O.O\n"
+        "....X.\n"
+        "......\n"
+        "......\n"
+        "......\n").symetrical_b() == true
+    );    
+
+    assert( create(
+        "....X.\n"
+        "...O.O\n"
+        "....XX\n"
+        "......\n"
+        "......\n"
+        "......\n").symetrical_b() == false
+    );   
 }
 
 int main(int argc, char** argv)
