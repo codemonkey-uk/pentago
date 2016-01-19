@@ -95,11 +95,35 @@ namespace pentago
     
     void board_18::transpose_ar()
     {
-        // placeholder
-        // 3x 90 degree rotations clockwise equals one rotation anticlockwise
-        transpose_a();
-        transpose_a();
-        transpose_a();
+        // reverse (anticlockwise) rotation of quadrant A
+        
+        // A1 => C1
+        state c1 = get(C1);
+        setx( C1, get(A1) );
+        
+        // A2 => B1
+        state b1 = get(B1);
+        setx( B1, get(A2) );
+        
+        // A3 => A1
+        setx( A1, get(A3) );
+        
+        // B1 => C2
+        state c2 = get(C2);
+        setx( C2, b1 );
+        
+        // B3 => A2
+        setx( A2, get(B3) );
+        
+        // C1 => C3
+        state c3 = get(C3);        
+        setx( C3, c1 );
+        
+        // C2 => B3
+        setx( B3, c2 );
+        
+        // C3 => A3
+        setx( A3, c3 );
     }
     
     // B+
@@ -435,8 +459,11 @@ namespace pentago
             case '.':
                 return pentago::empty;
             case 'X':
+            case 'x':
                 return pentago::black;
+            case '0':
             case 'O':
+            case 'o':            
                 return pentago::white;
             default:
                 return pentago::invalid;
