@@ -251,11 +251,35 @@ namespace pentago
     
     void board_18::transpose_cr()
     {
-        // placeholder
-        // 3x 90 degree rotations clockwise equals one rotation anticlockwise
-        transpose_c();
-        transpose_c();
-        transpose_c();
+        // reverse (anticlockwise) rotation of quadrant C
+        
+        // D1 => F1
+        state f1 = get(F1);
+        setx( F1, get(D1) );
+        
+        // D2 => e1
+        state e1 = get(E1);
+        setx( E1, get(D2) );
+        
+        // D3 => D1
+        setx( D1, get(D3) );
+        
+        // E1 => F2
+        state f2 = get(F2);
+        setx( F2, e1 );
+        
+        // E3 => A2
+        setx( D2, get(E3) );
+        
+        // F1 => F3
+        state f3 = get(F3);        
+        setx( F3, f1 );
+        
+        // F2 => E3
+        setx( E3, f2 );
+        
+        // F3 => D3
+        setx( D3, f3 );
     }    
 
     // D+
