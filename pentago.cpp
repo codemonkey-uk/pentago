@@ -329,11 +329,35 @@ namespace pentago
     
     void board_18::transpose_dr()
     {
-        // placeholder
-        // 3x 90 degree rotations clockwise equals one rotation anticlockwise
-        transpose_d();
-        transpose_d();
-        transpose_d();
+        // reverse (anticlockwise) rotation of quadrant D
+        
+        // D4 => F4
+        state f4 = get(F4);
+        setx( F4, get(D4) );
+        
+        // D5 => e4
+        state e4 = get(E4);
+        setx( E4, get(D5) );
+        
+        // D6 => D4
+        setx( D4, get(D6) );
+        
+        // E4 => F5
+        state f5 = get(F5);
+        setx( F5, e4 );
+        
+        // E6 => A5
+        setx( D5, get(E6) );
+        
+        // F4 => F6
+        state f6 = get(F6);        
+        setx( F6, f4 );
+        
+        // F5 => E6
+        setx( E6, f5 );
+        
+        // F6 => D6
+        setx( D6, f6 );
     }
     
     // Rotational symmetry in the A quadrant:
