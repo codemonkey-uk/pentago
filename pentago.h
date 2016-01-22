@@ -69,11 +69,25 @@ namespace pentago
                 return rhs.mV==mV;
             }
         
+            position& operator+=(const position& rhs)
+            {
+                // x1+y1*width + x2+y2*width == x1+x2 + (y1+y2)*width
+                // so
+                mV += rhs.mV;
+                return *this;
+            }
+            
         private:
             // note, mV is encoded as a "tightly packed" index into the board array
             static const int width = 6;
             uint8_t mV;
     };
+    
+    inline position operator + ( position lhs, const position& rhs )
+    {
+        lhs += rhs;
+        return lhs;
+    }
     
     // 4 bit board byte layout
     // [123-456-][789-ABC-]
@@ -178,6 +192,9 @@ namespace pentago
             static board_18 fromstring( const char* str );
         
         private:
+            void transpose(const position & offset);
+            void transpose_r(const position & offset);
+            
             // 3 bits per node gives misaligned bytes
             // (get/set more complicated) but 12b array
             // 4 bits per locale wastes 6 bytes with 18b array

@@ -62,68 +62,76 @@ namespace pentago
     // E
     // F
     
-    void board_18::transpose_a()
+    void board_18::transpose(const position & offset)
     {
         // A1 = C1
-        state a1 = get(A1);
-        setx( A1, get(C1) );
+        state a1 = get(A1+offset);
+        setx( A1+offset, get(C1+offset) );
         
         // A2 = B1
-        state a2 = get(A2);
-        setx( A2, get(B1) );
+        state a2 = get(A2+offset);
+        setx( A2+offset, get(B1+offset) );
         
         // A3 = A1
-        state a3 = get(A3);
-        setx( A3, a1 );
+        state a3 = get(A3+offset);
+        setx( A3+offset, a1 );
         
         // B1 = C3
-        setx( B1, get(C2) );
+        setx( B1+offset, get(C2+offset) );
         
         // B3 = A2
-        state b3 = get(B3);
-        setx( B3, a2 );
+        state b3 = get(B3+offset);
+        setx( B3+offset, a2 );
         
         // C1 = C3
-        setx( C1, get(C3) );
+        setx( C1+offset, get(C3+offset) );
         
         // C2 = B3
-        setx( C2, b3 );
+        setx( C2+offset, b3 );
         
         // C3 = A3
-        setx( C3, a3 );
+        setx( C3+offset, a3 );    
+    }
+
+    void board_18::transpose_r(const position & offset)
+    {
+        // A1 => C1
+        state c1 = get(C1+offset);
+        setx( C1+offset, get(A1+offset) );
+        
+        // A2 => B1
+        state b1 = get(B1+offset);
+        setx( B1+offset, get(A2+offset) );
+        
+        // A3 => A1
+        setx( A1+offset, get(A3+offset) );
+        
+        // B1 => C2
+        state c2 = get(C2+offset);
+        setx( C2+offset, b1 );
+        
+        // B3 => A2
+        setx( A2+offset, get(B3+offset) );
+        
+        // C1 => C3
+        state c3 = get(C3+offset);        
+        setx( C3+offset, c1 );
+        
+        // C2 => B3
+        setx( B3+offset, c2 );
+        
+        // C3 => A3
+        setx( A3+offset, c3 );
+    }
+    
+    void board_18::transpose_a()
+    {
+        transpose( position(0,0) );
     }
     
     void board_18::transpose_ar()
     {
-        // reverse (anticlockwise) rotation of quadrant A
-        
-        // A1 => C1
-        state c1 = get(C1);
-        setx( C1, get(A1) );
-        
-        // A2 => B1
-        state b1 = get(B1);
-        setx( B1, get(A2) );
-        
-        // A3 => A1
-        setx( A1, get(A3) );
-        
-        // B1 => C2
-        state c2 = get(C2);
-        setx( C2, b1 );
-        
-        // B3 => A2
-        setx( A2, get(B3) );
-        
-        // C1 => C3
-        state c3 = get(C3);        
-        setx( C3, c1 );
-        
-        // C2 => B3
-        setx( B3, c2 );
-        
-        // C3 => A3
-        setx( A3, c3 );
+        transpose_r( position(0,0) );
     }
     
     // B+
@@ -142,66 +150,13 @@ namespace pentago
     
     void board_18::transpose_b()
     {
-        // A4 = C4
-        state a4 = get(A4);
-        setx( A4, get(C4) );
-        
-        // A5 = B4
-        state a5 = get(A5);
-        setx( A5, get(B4) );
-        
-        // A6 = A4
-        state a6 = get(A6);
-        setx( A6, a4 );
-        
-        // B4 = C6
-        setx( B4, get(C5) );
-        
-        // B6 = A5
-        state b6 = get(B6);
-        setx( B6, a5 );
-        
-        // C4 = C6
-        setx( C4, get(C6) );
-        
-        // C5 = B6
-        setx( C5, b6 );
-        
-        // C6 = A6
-        setx( C6, a6 );
+        transpose( position(0,3) );
     }    
     
     void board_18::transpose_br()
     {
         // reverse (anticlockwise) rotation of quadrant B
-        
-        // A1 => C1
-        state c4 = get(C4);
-        setx( C4, get(A4) );
-        
-        // A2 => B1
-        state b4 = get(B4);
-        setx( B4, get(A5) );
-        
-        // A3 => A1
-        setx( A4, get(A6) );
-        
-        // B1 => C2
-        state c5 = get(C5);
-        setx( C5, b4 );
-        
-        // B3 => A2
-        setx( A5, get(B6) );
-        
-        // C1 => C3
-        state c6 = get(C6);        
-        setx( C6, c4 );
-        
-        // C2 => B3
-        setx( B6, c5 );
-        
-        // C3 => A3
-        setx( A6, c6 );
+        transpose_r( position(0,3) );
     }   
     
     // C+
@@ -220,66 +175,13 @@ namespace pentago
     
     void board_18::transpose_c()
     {
-        // D1 = F1
-        state a1 = get(D1);
-        setx( D1, get(F1) );
-        
-        // D2 = E1
-        state a2 = get(D2);
-        setx( D2, get(E1) );
-        
-        // D3 = D1
-        state a3 = get(D3);
-        setx( D3, a1 );
-        
-        // E1 = F3
-        setx( E1, get(F2) );
-        
-        // E3 = D2
-        state b3 = get(E3);
-        setx( E3, a2 );
-        
-        // F1 = F3
-        setx( F1, get(F3) );
-        
-        // F2 = E3
-        setx( F2, b3 );
-        
-        // F3 = D3
-        setx( F3, a3 );
+        transpose( position(3,0) );
     }
     
     void board_18::transpose_cr()
     {
         // reverse (anticlockwise) rotation of quadrant C
-        
-        // D1 => F1
-        state f1 = get(F1);
-        setx( F1, get(D1) );
-        
-        // D2 => e1
-        state e1 = get(E1);
-        setx( E1, get(D2) );
-        
-        // D3 => D1
-        setx( D1, get(D3) );
-        
-        // E1 => F2
-        state f2 = get(F2);
-        setx( F2, e1 );
-        
-        // E3 => A2
-        setx( D2, get(E3) );
-        
-        // F1 => F3
-        state f3 = get(F3);        
-        setx( F3, f1 );
-        
-        // F2 => E3
-        setx( E3, f2 );
-        
-        // F3 => D3
-        setx( D3, f3 );
+        transpose_r( position(3,0) );
     }    
 
     // D+
@@ -298,66 +200,13 @@ namespace pentago
     
     void board_18::transpose_d()
     {
-        // D4 = F4
-        state a4 = get(D4);
-        setx( D4, get(F4) );
-        
-        // D5 = E4
-        state a5 = get(D5);
-        setx( D5, get(E4) );
-        
-        // D6 = D4
-        state a6 = get(D6);
-        setx( D6, a4 );
-        
-        // E4 = F6
-        setx( E4, get(F5) );
-        
-        // E6 = D5
-        state b6 = get(E6);
-        setx( E6, a5 );
-        
-        // F4 = F6
-        setx( F4, get(F6) );
-        
-        // F5 = E6
-        setx( F5, b6 );
-        
-        // F6 = D6
-        setx( F6, a6 );
+        transpose( position(3,3) );
     }
     
     void board_18::transpose_dr()
     {
         // reverse (anticlockwise) rotation of quadrant D
-        
-        // D4 => F4
-        state f4 = get(F4);
-        setx( F4, get(D4) );
-        
-        // D5 => e4
-        state e4 = get(E4);
-        setx( E4, get(D5) );
-        
-        // D6 => D4
-        setx( D4, get(D6) );
-        
-        // E4 => F5
-        state f5 = get(F5);
-        setx( F5, e4 );
-        
-        // E6 => A5
-        setx( D5, get(E6) );
-        
-        // F4 => F6
-        state f6 = get(F6);        
-        setx( F6, f4 );
-        
-        // F5 => E6
-        setx( E6, f5 );
-        
-        // F6 => D6
-        setx( D6, f6 );
+        transpose_r( position(3,3) );
     }
     
     // Rotational symmetry in the A quadrant:
