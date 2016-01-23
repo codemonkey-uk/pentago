@@ -409,7 +409,8 @@ namespace pentago
     std::string tostring( const board& b )
     {
         std::string result;
-    
+        result.reserve(7*6);
+        
         for(int x=0;x!=6;++x)
         {
             for(int y=0;y!=6;++y)
@@ -425,7 +426,8 @@ namespace pentago
     std::string tostring_fancy( const board& b )
     {
         std::string result;
-    
+        result.reserve(14*8);
+        
         result = "  1 2 3 4 5 6\n";
         for(int x=0;x!=6;++x)
         {
@@ -473,6 +475,8 @@ namespace pentago
     std::string tostring( const move& b )
     {
         std::string result;
+        result.reserve(4);
+        
         result.push_back( 'A'+b.mP.getx() );
         result.push_back( '1'+b.mP.gety() );
         result.push_back( 'A'+b.mR.get_quadrant() );
