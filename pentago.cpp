@@ -76,23 +76,22 @@ namespace pentago
         state a3 = get(A3+offset);
         setx( A3+offset, a1 );
         
-        // B1 = C3
+        // B1 = C2
         setx( B1+offset, get(C2+offset) );
-        
-        // B3 = A2
-        state b3 = get(B3+offset);
-        setx( B3+offset, a2 );
         
         // C1 = C3
         setx( C1+offset, get(C3+offset) );
-        
+
         // C2 = B3
-        setx( C2+offset, b3 );
+        setx( C2+offset, get(B3+offset) );
+        
+        // B3 = A2
+        setx( B3+offset, a2 );
         
         // C3 = A3
         setx( C3+offset, a3 );    
     }
-
+    
     void board_18::transpose_r(const position & offset)
     {
         // A1 => C1
@@ -113,15 +112,14 @@ namespace pentago
         // B3 => A2
         setx( A2+offset, get(B3+offset) );
         
-        // C1 => C3
-        state c3 = get(C3+offset);        
+        // C3 => A3
+        setx( A3+offset, get(C3+offset) );
+        
+        // C1 => C3      
         setx( C3+offset, c1 );
         
         // C2 => B3
         setx( B3+offset, c2 );
-        
-        // C3 => A3
-        setx( A3+offset, c3 );
     }
     
     void board_18::transpose_a()
