@@ -124,12 +124,12 @@ namespace pentago
     
     void board_18::transpose_a()
     {
-        transpose( position(0,0) );
+        transpose( A1 );
     }
     
     void board_18::transpose_ar()
     {
-        transpose_r( position(0,0) );
+        transpose_r( A1 );
     }
     
     // B+
@@ -148,13 +148,13 @@ namespace pentago
     
     void board_18::transpose_b()
     {
-        transpose( position(0,3) );
+        transpose( A4 );
     }    
     
     void board_18::transpose_br()
     {
         // reverse (anticlockwise) rotation of quadrant B
-        transpose_r( position(0,3) );
+        transpose_r( A4 );
     }   
     
     // C+
@@ -173,14 +173,14 @@ namespace pentago
     
     void board_18::transpose_c()
     {
-        transpose( position(3,0) );
+        transpose( D1 );
     }
     
     void board_18::transpose_cr()
     {
         // reverse (anticlockwise) rotation of quadrant C
-        transpose_r( position(3,0) );
-    }    
+        transpose_r( D1 );
+    }
 
     // D+
     //   1 2 3 4 5 6
@@ -198,13 +198,13 @@ namespace pentago
     
     void board_18::transpose_d()
     {
-        transpose( position(3,3) );
+        transpose( D4 );
     }
     
     void board_18::transpose_dr()
     {
         // reverse (anticlockwise) rotation of quadrant D
-        transpose_r( position(3,3) );
+        transpose_r( D4 );
     }
     
     // Rotational symmetry in the A quadrant:
@@ -312,15 +312,15 @@ namespace pentago
         // center diagnals have the same logic as rows and columns
         
         // 0,0-5,5 line
-        state r = get(1,1);
-        if (r==get(2,2) && r==get(3,3) && r==get(4,4))
-            if (r==get(0,0) || r==get(5,5))
+        state r = get(B2);
+        if (r==get(C3) && r==get(D4) && r==get(E5))
+            if (r==get(A1) || r==get(E5))
                 result = (state)(result | r);
         
         // and 0,5-5,0 line
-        r = get(1,4);
-        if (r==get(2,3) && r==get(3,2) && r==get(4,1))
-            if (r==get(0,5) || r==get(5,0))
+        r = get(B5);
+        if (r==get(C4) && r==get(D3) && r==get(E2))
+            if (r==get(A6) || r==get(F1))
                 result = (state)(result | r);
         
         // 0,1-4,5 line

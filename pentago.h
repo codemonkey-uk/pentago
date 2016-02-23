@@ -29,9 +29,10 @@ namespace pentago
         public:
             position() : mV(0) {}
             position(const position& rhs) : mV(rhs.mV) {}
-            position(int x, int y) : mV(0)
+            position(int x, int y)
+                : mV(calc(x,y))
             {
-                set(x,y);
+                
             }
             
             int getx() const 
@@ -51,7 +52,7 @@ namespace pentago
             
             void set(int x, int y)
             {
-                mV = x+y*width;
+                mV = calc(x,y);
             }
 
             void setx(int x) 
@@ -80,6 +81,10 @@ namespace pentago
         private:
             // note, mV is encoded as a "tightly packed" index into the board array
             static const int width = 6;
+            static inline uint8_t calc(int x, int y)
+            {
+                return x+y*width;
+            }
             uint8_t mV;
     };
     
