@@ -24,43 +24,45 @@ namespace pentago
     }
     
     // 0-5 x 0-5
+    typedef unsigned int UInt;
+    
     class position
     {
         public:
             position() : mV(0) {}
             position(const position& rhs) : mV(rhs.mV) {}
-            position(int x, int y)
+            position(UInt x, UInt y)
                 : mV(calc(x,y))
             {
                 
             }
             
-            int getx() const 
+            UInt getx() const 
             {
                 return mV%width;
             }
             
-            int gety() const 
+            UInt gety() const 
             {
                 return mV/width;
             }
             
-            int get() const
+            UInt get() const
             {
                 return mV;
             }
             
-            void set(int x, int y)
+            void set(UInt x, UInt y)
             {
                 mV = calc(x,y);
             }
 
-            void setx(int x) 
+            void setx(UInt x) 
             {
                 set(x, gety());
             }
             
-            void sety(int y)  
+            void sety(UInt y)  
             {
                 set(getx(), y);
             }
@@ -80,8 +82,8 @@ namespace pentago
             
         private:
             // note, mV is encoded as a "tightly packed" index into the board array
-            static const int width = 6;
-            static inline uint8_t calc(int x, int y)
+            static const UInt width = 6;
+            static inline uint8_t calc(UInt x, UInt y)
             {
                 return x+y*width;
             }
@@ -114,14 +116,14 @@ namespace pentago
             
             state get(position p)const
             {
-                int b = bits_per*p.get();
-                int bit = b%8;
-                int byte = b/8;
-                int result = (mV[byte] >> bit) & bit_mask;
+                UInt b = bits_per*p.get();
+                UInt bit = b%8;
+                UInt byte = b/8;
+                UInt result = (mV[byte] >> bit) & bit_mask;
                 return (state)(result);
             }
             
-            state get(int x, int y)const
+            state get(UInt x, UInt y)const
             {
                 position p(x,y);
                 return get(p);
@@ -129,31 +131,31 @@ namespace pentago
             
             void set(position p, state s)
             {
-                int b = bits_per*p.get();
-                int bit = b%8;
-                int byte = b/8;
+                UInt b = bits_per*p.get();
+                UInt bit = b%8;
+                UInt byte = b/8;
                 mV[byte] |= (s << bit);
             }
 
             void clear(position p)
             {
-                int b = bits_per*p.get();
-                int bit = b%8;
-                int byte = b/8;
+                UInt b = bits_per*p.get();
+                UInt bit = b%8;
+                UInt byte = b/8;
                 mV[byte] &= ~(bit_mask << bit);
             }
             
             // clear and set
             void setx(position p, state s)
             {
-                int b = bits_per*p.get();
-                int bit = b%8;
-                int byte = b/8;
+                UInt b = bits_per*p.get();
+                UInt bit = b%8;
+                UInt byte = b/8;
                 mV[byte] &= ~(bit_mask << bit);
                 mV[byte] |= (s << bit);
             }
         
-            void set(int x, int y, state s)
+            void set(UInt x, UInt y, state s)
             {
                 position p(x,y);
                 set(p, s);
@@ -189,8 +191,8 @@ namespace pentago
             // column (along y axis)
             // and diagnal
             // winning being the colour that holds 5 in a row
-            state winningrow(int index)const;
-            state winningcol(int index)const;
+            state winningrow(UInt index)const;
+            state winningcol(UInt index)const;
             state winningdiag()const;
             state winning()const;
         
@@ -203,8 +205,8 @@ namespace pentago
             // 3 bits per node gives misaligned bytes
             // (get/set more complicated) but 12b array
             // 4 bits per locale wastes 6 bytes with 18b array
-            static const int bits_per = 4; 
-            static const int bit_mask = 7;
+            static const UInt bits_per = 4; 
+            static const UInt bit_mask = 7;
             uint8_t mV[18];
     };
     
@@ -308,7 +310,7 @@ namespace pentago
         // default ctor required for vector.resize(0) to compile
         move() : mP(0,0), mR() { }
         
-        void apply(board_18* board, int turn) const;
+        void apply(board_18* board, UInt turn) const;
         void undo(board_18* board) const;
         
         position mP;

@@ -273,7 +273,7 @@ namespace pentago
     }    
     
     
-    state board_18::winningrow(int x)const
+    state board_18::winningrow(UInt x)const
     {
         // [012345]
         // [?1234?]
@@ -287,7 +287,7 @@ namespace pentago
         return empty;
     }
 
-    state board_18::winningcol(int y)const
+    state board_18::winningcol(UInt y)const
     {
         // exactly the same logic as rows, but on the other axis
         const state r = get(1,y);
@@ -350,7 +350,7 @@ namespace pentago
     {
         // both players can win at the same time
         state rc = empty, rr = empty;
-        for (int n=0;n!=6;++n)
+        for (UInt n=0;n!=6;++n)
         {
             rr = (state)(rr | winningrow(n));
             rc = (state)(rc | winningcol(n));
@@ -393,9 +393,9 @@ namespace pentago
     {
         board result;
     
-        for(int x=0;x!=6;++x)
+        for(UInt x=0;x!=6;++x)
         {
-            for(int y=0;y!=6;++y)
+            for(UInt y=0;y!=6;++y)
             {
                 result.set(position(x,y), fromchar(str[y+x*7]));
             }
@@ -409,9 +409,9 @@ namespace pentago
         std::string result;
         result.reserve(7*6);
         
-        for(int x=0;x!=6;++x)
+        for(UInt x=0;x!=6;++x)
         {
-            for(int y=0;y!=6;++y)
+            for(UInt y=0;y!=6;++y)
             {
                 result.push_back( tochar(b.get(x,y)) );
             }
@@ -427,10 +427,10 @@ namespace pentago
         result.reserve(14*8);
         
         result = "  1 2 3 4 5 6\n";
-        for(int x=0;x!=6;++x)
+        for(UInt x=0;x!=6;++x)
         {
             result.push_back('A'+x);
-            for(int y=0;y!=6;++y)
+            for(UInt y=0;y!=6;++y)
             {
                 result += (y==3) ? '|' : ' ';
                 result.push_back( tochar(b.get(x,y)) );
@@ -444,7 +444,7 @@ namespace pentago
         return result;    
     }
     
-    void move::apply(board_18* board, int turn) const
+    void move::apply(board_18* board, UInt turn) const
     {
         board->set( mP, turntostate(turn) );
         if (board->winning()==empty)
@@ -507,8 +507,8 @@ namespace pentago
     
     void empty_positions::step()
     {
-        int x = mP.getx();
-        int y = mP.gety();
+        UInt x = mP.getx();
+        UInt y = mP.gety();
         
         x++;
         if (x>5)
