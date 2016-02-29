@@ -6,7 +6,9 @@
 #include <vector>
 #include <string>
 
-#include<iostream>
+#include <iostream>
+
+#include "mcts.h"
 
 using namespace std;
 using namespace pentago;
@@ -51,11 +53,9 @@ bool valid_move(const string& rhs)
     return true;
 }
 
-void all_moves(const board& b, int turn, vector< pentago::move >* moves)
+template< typename ItrOut >
+void all_moves(const board& b, int turn, ItrOut moves)
 {
-    moves->reserve( (6*6*4*2)-turn );
-    moves->resize( 0 );
-    
     // simple test for empty positions generator
     empty_positions itr(b);
     
@@ -69,12 +69,19 @@ void all_moves(const board& b, int turn, vector< pentago::move >* moves)
             if (r.get_direction()==rotation::clockwise ||
                 r.symetrical(&b)==false)
             {
-                moves->push_back( pentago::move( p, r ) );
+                *moves++ = pentago::move( p, r );
             }
             r.next();
         }
         itr.next();
     }
+}
+
+void all_moves(const board& b, int turn, vector< pentago::move >* moves)
+{
+    moves->reserve( (6*6*4*2)-turn );
+    moves->resize( 0 );
+    all_moves(b, turn, std::back_inserter( *moves ));
 }
 
 pentago::move random_move(const board& b, int turn)
@@ -131,6 +138,41 @@ pentago::move ai(const board& b, int turn)
     return best_move(b, turn);
 }
 
+// mcts adaptor for board_18 class
+struct GameState
+{
+    board mBoard;
+    int mTurn;
+    
+    GameState(board b, int t) : mBoard(b), mTurn(t) {}
+    GameState() : mTurn(0) {}
+    
+    int GetCurrentPlayer() const { return mTurn & 1; }
+    bool Finished() const { return mBoard.winning()!=empty || mTurn==6*6; }
+    int GetWinner() const { return ((int)mBoard.winning())-1; }
+    
+    template< typename OutItr >
+    void GetAllMoves(OutItr itr)
+    {
+        all_moves(mBoard, mTurn, itr);
+    }
+    
+    GameState PlayMove( pentago::move move )
+    {
+        GameState result(*this);
+        move.apply( &result.mBoard, result.mTurn++ );
+        return result;
+    }
+};
+
+pentago::move ai_mcts(const board& b, int turn)
+{
+    static const clock_t ticks_per_s = sysconf(_SC_CLK_TCK);
+    
+    GameState game(b,turn);
+    return mcts::Node< pentago::move >::GetMove( game, ticks_per_s );
+}
+
 void interactive()
 {
     board b;
@@ -160,7 +202,7 @@ void interactive()
                 
             if (movestr=="ai")
             {
-                movestr = tostring( ai(b, turn) );
+                movestr = tostring( ai_mcts(b, turn) );
                 cout << "ai selects: " << movestr << endl;
             }
         }
@@ -177,6 +219,33 @@ void interactive()
     else
         cout << tochar(b.winning()) << " wins.";
     cout << endl;
+}
+
+void mcts_tests(bool verbose)
+{
+    static vector< pentago::move > moves;
+    
+    GameState game;
+    all_moves(game.mBoard, 0, &moves);
+    
+    // template< typename Move, typename MoveItr >
+    // std::vector< Node<Move> >* GetAllNodes( MoveItr itr, MoveItr end )
+    
+    auto nodes = mcts::GetAllNodes<pentago::move> ( moves.begin(), moves.end() );
+    assert( nodes->size() == moves.size() );
+    
+    // template< typename Move, typename GameState > 
+    // int Explore( Node< Move >* node, GameState theGame )
+    
+    int w = mcts::Node< pentago::move >::Explore( &(*nodes)[0], game );
+
+    // winners player index
+    assert( w==0 || w==1 || w==2 );
+    
+    clock_t ticks_per_s = sysconf(_SC_CLK_TCK);
+    
+    pentago::move m = mcts::Node< pentago::move >::GetMove( game, ticks_per_s );
+    printf( "%s\n", tostring(m).c_str() );
 }
 
 void run_tests(bool verbose)
@@ -943,6 +1012,8 @@ void run_tests(bool verbose)
         "......\n"
         "......\n").symetrical_b() == false
     );   
+    
+    mcts_tests(verbose);
 }
 
 int main(int argc, char** argv)
