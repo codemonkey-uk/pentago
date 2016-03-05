@@ -1,7 +1,38 @@
+// MCTS.h
+//
+// Given a Move type, and GameState type that supports the interface:
+//
+//    - Who's turn is it? 
+//    int GetCurrentPlayer() const; 
+//
+//    - What moves can they make? 
+//      as template method that writes "Move" objects to an output iterator
+//    template< typename OutItr >
+//    void GetAllMoves(OutItr itr)
+//
+//    - Return the new game state, given the selected move to be played
+//    GameState PlayMove( Move )
+//
+//    - Is the game finished?
+//    bool Finished() const;
+//
+//    - If the game is finished, who won?
+//    int GetWinner() const;
+//
+//    - How many moves left in this game?
+//      used to guide pre-allocations for play out, doesn't have to be 100% accurate
+//      over estimation == over allocation in setting a stack size
+//      under estimation == search will reallocate during a playouts to size the stack
+//    int MovesLeft() const;
+//        
+// Then call as follows to get a "good" guess of the next move to play, in bounded time:
+//
+// Move ai_move = mcts::Node< Move >::GetMove( gameState, ticks_per_s*seconds );
+//
+
 #ifndef MCTS_H_INCLUDED
 #define MCTS_H_INCLUDED
 
-// todo: remove requirement on std::vector
 #include <vector>
 #include <cmath>
 #include <cfloat>
@@ -120,14 +151,7 @@ namespace mcts
     {
         // play out the game
         std::vector< std::pair< Node<Move>*, int> > stack;
-        
-        // TODO: find upper bound on total turns left
-        // int turnsLeft = 0;
-        // for (int i=0; i!=theGame.GetPlayerCount(); ++i)
-        //    turnsLeft += theGame.GetPlayerChange( i ).GetTotalValue();
-        //
-        // size our stack for moves left
-        // stack.reserve(turnsLeft);
+        stack.reserve(theGame.MovesLeft());
         
         do
         {
@@ -186,6 +210,8 @@ namespace mcts
                 dt = times(&t) - currentTurnClockStart;
             }while( dt < timeLeft );
         }
+        
+        //printf("%i\n", CountTrials(moveList));
         
         Move result = best->mMove;
         Cleanup( moveList );

@@ -148,9 +148,15 @@ struct GameState
     GameState() : mTurn(0) {}
     
     int GetCurrentPlayer() const { return mTurn & 1; }
-    bool Finished() const { return mBoard.winning()!=empty || mTurn==6*6; }
     int GetWinner() const { return ((int)mBoard.winning())-1; }
+    bool Finished() const { return mBoard.winning()!=empty || mTurn==6*6; }
     
+    // used to guide pre-allocations for play out
+    // doesn't have to be 100% accurate, but
+    // over estimation == over allocation in setting a stack size
+    // under estimation == reallocates during a playouts to size the stack
+    int MovesLeft() const { return (6*6)-mTurn; }
+        
     template< typename OutItr >
     void GetAllMoves(OutItr itr)
     {
