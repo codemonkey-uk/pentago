@@ -1,4 +1,5 @@
 #include "pentago.h"
+#include "mcts.h"
 
 #include <cassert>
 #include <cstdio>
@@ -8,7 +9,11 @@
 
 #include <iostream>
 
-#include "mcts.h"
+// timing stuff
+#include <sys/times.h>
+#include <unistd.h>
+
+
 
 using namespace std;
 using namespace pentago;
@@ -171,12 +176,32 @@ struct GameState
     }
 };
 
-pentago::move ai_mcts(const board& b, int turn)
+static const clock_t ticks_per_s = sysconf(_SC_CLK_TCK);
+
+struct OneSecondTimeOut
 {
-    static const clock_t ticks_per_s = sysconf(_SC_CLK_TCK);
+    OneSecondTimeOut()
+    {
+        tms t;
+        currentTurnClockStart = times(&t);
+    }
     
+    bool operator()()
+    {
+        tms t;
+        dt = times(&t) - currentTurnClockStart;
+        return dt < ticks_per_s;
+    }
+    
+    clock_t dt, currentTurnClockStart;
+};
+
+pentago::move ai_mcts(const board& b, int turn)
+{       
     GameState game(b,turn);
-    return mcts::Node< pentago::move >::GetMove( game, ticks_per_s );
+    
+    OneSecondTimeOut timer;
+    return mcts::Node< pentago::move >::GetMove( game, timer );
 }
 
 void interactive()
@@ -248,9 +273,8 @@ void mcts_tests(bool verbose)
     // winners player index
     assert( w==0 || w==1 || w==2 );
     
-    clock_t ticks_per_s = sysconf(_SC_CLK_TCK);
-    
-    pentago::move m = mcts::Node< pentago::move >::GetMove( game, ticks_per_s );
+    OneSecondTimeOut timer;
+    pentago::move m = mcts::Node< pentago::move >::GetMove( game, timer );
     printf( "%s\n", tostring(m).c_str() );
 }
 

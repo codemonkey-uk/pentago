@@ -27,19 +27,40 @@
 //        
 // Then call as follows to get a "good" guess of the next move to play, in bounded time:
 //
-// Move ai_move = mcts::Node< Move >::GetMove( gameState, ticks_per_s*seconds );
+// Move ai_move = mcts::Node< Move >::GetMove( gameState, timeOutFn );
 //
+// - Where timeOutFn is a function object that returns false when the AI time has expired:
+//
+//     static const clock_t ticks_per_s = sysconf(_SC_CLK_TCK);
+//     struct OneSecondTimeOut
+//     {
+//         OneSecondTimeOut()
+//         {
+//             tms t;
+//             currentTurnClockStart = times(&t);
+//         }
+//     
+//         bool operator()()
+//         {
+//             tms t;
+//             dt = times(&t) - currentTurnClockStart;
+//             return dt < ticks_per_s;
+//         }
+//     
+//         clock_t dt, currentTurnClockStart;
+//     };
+// 
 
 #ifndef MCTS_H_INCLUDED
 #define MCTS_H_INCLUDED
 
-#include <vector>
 #include <cmath>
 #include <cfloat>
 
-// timing stuff
-#include <sys/times.h>
-#include <unistd.h>
+// TODO: Still want to remove the use of std::vector
+// it's really just me being a bit lazy about allocations,
+// and it's sloppy interface design to use it like I have here
+#include <vector>
 
 namespace mcts
 {
@@ -76,8 +97,8 @@ namespace mcts
             template< typename GameState > 
             static int Explore( Node< Move >* node, GameState theGame );
             
-            template< typename GameState > 
-            static Move GetMove( GameState theGame, clock_t timeLeft );
+            template< typename GameState, typename TimeoutFn > 
+            static Move GetMove( GameState theGame, TimeoutFn timeOut );
         
         private:
             Move mMove;
@@ -181,13 +202,9 @@ namespace mcts
     }
     
     template< typename Move >
-    template< typename GameState > 
-    Move Node<Move>::GetMove( GameState theGame, clock_t timeLeft )
+    template< typename GameState, typename TimeoutFn > 
+    Move Node<Move>::GetMove( GameState theGame, TimeoutFn timeOut )
     {
-        // TODO externalise time-left
-        tms t;
-        clock_t dt, currentTurnClockStart = times(&t);
-
         std::vector<Node>* moveList = GetAllNodes<Move>( theGame );
         Node* best = &(*moveList)[0];
         
@@ -207,8 +224,7 @@ namespace mcts
                         best = trial;
                 }
                 
-                dt = times(&t) - currentTurnClockStart;
-            }while( dt < timeLeft );
+            }while( timeOut() );
         }
         
         //printf("%i\n", CountTrials(moveList));
