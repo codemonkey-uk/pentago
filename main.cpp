@@ -59,7 +59,7 @@ bool valid_move(const string& rhs)
 }
 
 template< typename ItrOut >
-void all_moves(const board& b, int turn, ItrOut moves)
+ItrOut all_moves(const board& b, int turn, ItrOut moves)
 {
     // simple test for empty positions generator
     empty_positions itr(b);
@@ -80,6 +80,8 @@ void all_moves(const board& b, int turn, ItrOut moves)
         }
         itr.next();
     }
+    
+    return moves;
 }
 
 void all_moves(const board& b, int turn, vector< pentago::move >* moves)
@@ -161,11 +163,16 @@ struct GameState
     // over estimation == over allocation in setting a stack size
     // under estimation == reallocates during a playouts to size the stack
     int MovesLeft() const { return (6*6)-mTurn; }
-        
-    template< typename OutItr >
-    void GetAllMoves(OutItr itr)
+    
+    int CountPossibleMoves() const
     {
-        all_moves(mBoard, mTurn, itr);
+        return (6*6*4*2)-mTurn;
+    }
+    
+    template< typename OutItr >
+    OutItr GetPossibleMoves(OutItr itr)
+    {
+        return all_moves(mBoard, mTurn, itr);
     }
     
     GameState PlayMove( pentago::move move )
@@ -190,7 +197,7 @@ struct OneSecondTimeOut
     {
         tms t;
         dt = times(&t) - currentTurnClockStart;
-        return dt < ticks_per_s;
+        return dt < ticks_per_s*2;
     }
     
     clock_t dt, currentTurnClockStart;
@@ -262,16 +269,16 @@ void mcts_tests(bool verbose)
     // template< typename Move, typename MoveItr >
     // std::vector< Node<Move> >* GetAllNodes( MoveItr itr, MoveItr end )
     
-    auto nodes = mcts::GetAllNodes<pentago::move> ( moves.begin(), moves.end() );
-    assert( nodes->size() == moves.size() );
+    //auto nodes = mcts::GetAllNodes<pentago::move> ( moves.begin(), moves.end() );
+    //assert( nodes->size() == moves.size() );
     
     // template< typename Move, typename GameState > 
     // int Explore( Node< Move >* node, GameState theGame )
     
-    int w = mcts::Node< pentago::move >::Explore( &(*nodes)[0], game );
+    //int w = mcts::Node< pentago::move >::Explore( &(*nodes)[0], game );
 
     // winners player index
-    assert( w==0 || w==1 || w==2 );
+    //assert( w==0 || w==1 || w==2 );
     
     OneSecondTimeOut timer;
     pentago::move m = mcts::Node< pentago::move >::GetMove( game, timer );

@@ -5,10 +5,15 @@
 //    - Who's turn is it? 
 //    int GetCurrentPlayer() const; 
 //
+//    - How many moves can they make?
+//      Must be exact, or overestimate. Underestimates will result in a buffer overrun.
+//    int CountPossibleMoves() const
+//
 //    - What moves can they make? 
 //      as template method that writes "Move" objects to an output iterator
+//      Must not output more moves than returned by CountPossibleMoves (less is okay)
 //    template< typename OutItr >
-//    void GetAllMoves(OutItr itr)
+//    OutItr GetPossibleMoves(OutItr itr)
 //
 //    - Return the new game state, given the selected move to be played
 //    GameState PlayMove( Move )
@@ -56,10 +61,10 @@
 
 #include <cmath>
 #include <cfloat>
+#include <cassert>
 
 // TODO: Still want to remove the use of std::vector
-// it's really just me being a bit lazy about allocations,
-// and it's sloppy interface design to use it like I have here
+// it's really just me being a bit lazy about allocations
 #include <vector>
 
 namespace mcts
@@ -70,10 +75,11 @@ namespace mcts
     class Node
     {
         public:
-            Node( const Move& move )
+            Node( const Move& move=Move() )
                 : mMove(move)
                 , mWins(0)
                 , mSims(0)
+                , mChildCount(0)
                 , mChildren(0)
             { }
         
@@ -90,9 +96,11 @@ namespace mcts
                 return (float)mWins / (float)mSims;
             }
 
-            static int CountTrials(const std::vector< Node<Move> >* nodes);            
-            static void Cleanup(const std::vector< Node<Move> >* nodes);
-            static Node<Move>* SelectNode(std::vector< Node<Move> >* nodes);
+            static int CountTrials(Node<Move>* nodes, size_t n);
+            static void Cleanup(Node<Move>* nodes, size_t n);
+            static int CountNodes(Node<Move>* nodes, size_t n);
+            
+            static Node<Move>* SelectNode(Node<Move>* nodes, size_t n);
             
             template< typename GameState > 
             static int Explore( Node< Move >* node, GameState theGame );
@@ -100,46 +108,67 @@ namespace mcts
             template< typename GameState, typename TimeoutFn > 
             static Move GetMove( GameState theGame, TimeoutFn timeOut );
         
+            int ChildCount() const;
         private:
             Move mMove;
             int mWins;
             int mSims;
-            std::vector<Node>* mChildren;
-        
-    };        
+            int mChildCount;
+            Node* mChildren;
+    };
+    
+    template< typename Move >    
+    int Node<Move>::ChildCount() const
+    {
+        assert(mChildren);
+        return mChildCount;
+    }
+    
 
     template< typename Move >
-    int Node<Move>::CountTrials(const std::vector< Node<Move> >* nodes)
+    int Node<Move>::CountTrials(Node<Move>* nodes, size_t n)
     {
         int result=0;
-        for (int i=0;i!=nodes->size();++i)
-            result += (*nodes)[i].mSims;
+        for (int i=0;i!=n;++i)
+            result += nodes[i].mSims;
         return result;
     }
     
     template< typename Move >
-    void Node<Move>::Cleanup(const std::vector< Node<Move> >* nodes)
+    void Node<Move>::Cleanup(Node<Move>* nodes, size_t n)
     {
-        for (int i=0;i!=nodes->size();++i)
+        for (int i=0;i!=n;++i)
         {
-            if ((*nodes)[i].mChildren)
-                Cleanup((*nodes)[i].mChildren);
+            if (nodes[i].mChildren)
+                Cleanup(nodes[i].mChildren, nodes[i].ChildCount());
         }
         delete nodes;
     }
+
+    template< typename Move >
+    int Node<Move>::CountNodes(Node<Move>* nodes, size_t n)
+    {
+        int total = n;
+        for (int i=0;i!=n;++i)
+        {
+            if (nodes[i].mChildren)
+                total += CountNodes(nodes[i].mChildren, nodes[i].ChildCount());
+        }
+        return total;
+    }
     
     template< typename Move >
-    Node<Move>* Node<Move>::SelectNode(std::vector< Node<Move> >* nodes)
+    Node<Move>* Node<Move>::SelectNode(Node<Move>* nodes, size_t n)
     {
         float best_uct = -FLT_MAX;
         Node<Move>* result = 0;
-        const float lnt = log( (float)CountTrials(nodes) );
-        for (typename std::vector< Node<Move> >::iterator i=nodes->begin(); i!=nodes->end(); ++i)
+        const float lnt = log( (float)CountTrials(nodes, n) );
+        for (int i=0; i!=n; ++i)
         {
-            float uct = i->UCT(lnt);
+            float uct = nodes[i].UCT(lnt);
             if (uct>best_uct) 
             {
-                result = &*i;
+                result = &nodes[i];
                 best_uct = uct;
             }
         }
@@ -147,23 +176,15 @@ namespace mcts
         return result;
     }
     
-    template< typename Move, typename MoveItr >
-    std::vector< Node<Move> >* GetAllNodes( MoveItr itr, MoveItr end )
-    {
-        std::vector< Node<Move> >* result = new std::vector< Node<Move> >();
-        std::copy( itr, end, std::back_inserter(*result) );
-        return result;
-    }
-    
     template< typename Move, typename GameState >
-    std::vector< Node<Move> >* GetAllNodes( GameState theGame )
+    Node<Move>* GetAllNodes( GameState theGame, int* nodeCount )
     {
-        // TODO: fix ugly/inefficient: code copies all moves to a vector, 
-        // then those into a node vector, it should grab a generator object
-        // and create the node array directly from that
-        std::vector< Move > moves;
-        theGame.GetAllMoves( std::back_inserter(moves) );
-        return GetAllNodes<Move>( moves.begin(), moves.end() );
+        const int m = theGame.CountPossibleMoves();
+        Node<Move>* result = new Node<Move>[m];
+        Node<Move>* end = theGame.GetPossibleMoves( result );
+        *nodeCount = end-result;
+        assert( *nodeCount<=m );
+        return result;
     }
     
     template< typename Move >
@@ -178,10 +199,10 @@ namespace mcts
         {
             if (node->mChildren == 0)
             {
-                node->mChildren = GetAllNodes<Move>( theGame );
+                node->mChildren = GetAllNodes<Move>( theGame, &node->mChildCount );
             }
             
-            node = SelectNode(node->mChildren);
+            node = SelectNode(node->mChildren, node->mChildCount);
             theGame = theGame.PlayMove( node->mMove );
             
             int p = theGame.GetCurrentPlayer();
@@ -189,7 +210,7 @@ namespace mcts
             
         }while(theGame.Finished()==false);
         
-        int winner = theGame.GetWinner();
+        const int winner = theGame.GetWinner();
         
         // back propagate the explored nodes
         for (int i=0; i!=stack.size(); ++i)
@@ -205,14 +226,15 @@ namespace mcts
     template< typename GameState, typename TimeoutFn > 
     Move Node<Move>::GetMove( GameState theGame, TimeoutFn timeOut )
     {
-        std::vector<Node>* moveList = GetAllNodes<Move>( theGame );
-        Node* best = &(*moveList)[0];
+        int moveCount;
+        Node* moveList = GetAllNodes<Move>( theGame, &moveCount );
+        Node* best = moveList;
         
-        if (moveList->size()>1)
+        if (moveCount>1)
         {
             do
             {
-                Node* trial = SelectNode(moveList);
+                Node* trial = SelectNode(moveList, moveCount);
             
                 GameState newGame = theGame.PlayMove( trial->mMove );
                 trial->mSims++;
@@ -227,10 +249,10 @@ namespace mcts
             }while( timeOut() );
         }
         
-        //printf("%i\n", CountTrials(moveList));
+        // printf("%i / %i\n", CountTrials(moveList, moveCount), CountNodes(moveList, moveCount));
         
         Move result = best->mMove;
-        Cleanup( moveList );
+        Cleanup( moveList, moveCount );
             
         return result;
     }
