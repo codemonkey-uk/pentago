@@ -1,34 +1,36 @@
 // MCTS.h
 //
-// Given a Move type, and GameState type that supports the interface:
+// Given a Move value type, 
+// and GameState type that supports the interface:
 //
-//    - Who's turn is it? 
-//    int GetCurrentPlayer() const; 
+//    - Who's turn is it?
+//    int GetCurrentPlayer() const
 //
-//    - How many moves can they make?
-//      Must be exact, or overestimate. Underestimates will result in a buffer overrun.
+//    - How many different moves could be taken on the current turn.
+//      Must be exact, or overestimate. 
+//      Underestimates will result in a buffer overrun!
 //    int CountPossibleMoves() const
 //
-//    - What moves can they make? 
-//      as template method that writes "Move" objects to an output iterator
+//    - What moves could be taken on the current turn.
+//      A template member function that writes "Move" objects to an output iterator
 //      Must not output more moves than returned by CountPossibleMoves (less is okay)
 //    template< typename OutItr >
-//    OutItr GetPossibleMoves(OutItr itr)
+//    OutItr GetPossibleMoves(OutItr itr) const
 //
-//    - Return the new game state, given the selected move to be played
-//    GameState PlayMove( Move )
+//    - Return the new game state, given the Move to be played.
+//    GameState PlayMove( Move ) const
 //
-//    - Is the game finished?
+//    - Is the game over? Returns true if there are no more turns to play.
 //    bool Finished() const;
 //
 //    - If the game is finished, who won?
 //    int GetWinner() const;
 //
-//    - How many moves left in this game?
+//    - How many turns left in this game?
 //      used to guide pre-allocations for play out, doesn't have to be 100% accurate
 //      over estimation == over allocation in setting a stack size
 //      under estimation == search will reallocate during a playouts to size the stack
-//    int MovesLeft() const;
+//    int TurnsLeft() const;
 //        
 // Then call as follows to get a "good" guess of the next move to play, in bounded time:
 //
@@ -193,7 +195,7 @@ namespace mcts
     {
         // play out the game
         std::vector< std::pair< Node<Move>*, int> > stack;
-        stack.reserve(theGame.MovesLeft());
+        stack.reserve(theGame.TurnsLeft());
         
         do
         {

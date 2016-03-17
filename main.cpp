@@ -162,7 +162,7 @@ struct GameState
     // doesn't have to be 100% accurate, but
     // over estimation == over allocation in setting a stack size
     // under estimation == reallocates during a playouts to size the stack
-    int MovesLeft() const { return (6*6)-mTurn; }
+    int TurnsLeft() const { return (6*6)-mTurn; }
     
     int CountPossibleMoves() const
     {
@@ -170,12 +170,12 @@ struct GameState
     }
     
     template< typename OutItr >
-    OutItr GetPossibleMoves(OutItr itr)
+    OutItr GetPossibleMoves(OutItr itr) const
     {
         return all_moves(mBoard, mTurn, itr);
     }
     
-    GameState PlayMove( pentago::move move )
+    GameState PlayMove( pentago::move move ) const
     {
         GameState result(*this);
         move.apply( &result.mBoard, result.mTurn++ );
@@ -718,6 +718,18 @@ void run_tests(bool verbose)
     if (verbose) printboard(b);
     assert( b.winningdiag()==white );
     assert( b.winning()==white );
+    
+    // check a diagnal win
+    b = create(
+        "......\n"
+        ".O....\n"
+        "..O...\n"
+        "...O..\n"
+        "....O.\n"
+        "......\n");
+    if (verbose) printboard(b);
+    assert( b.winningdiag()==empty );
+    assert( b.winning()==empty );
     
     // break the win and check it again
     b.transpose_a();

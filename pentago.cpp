@@ -314,7 +314,7 @@ namespace pentago
         // 0,0-5,5 line
         state r = get(B2);
         if (r==get(C3) && r==get(D4) && r==get(E5))
-            if (r==get(A1) || r==get(E5))
+            if (r==get(A1) || r==get(F6))
                 result = (state)(result | r);
         
         // and 0,5-5,0 line
