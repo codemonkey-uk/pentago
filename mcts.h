@@ -73,6 +73,14 @@ namespace mcts
 {
     const float uct_c = sqrt(2);
     
+    template< typename NodeType >
+    struct PlayoutTurn
+    {
+        PlayoutTurn( NodeType* n, int p ) : mNode(n), mPlayer(p) { }
+        NodeType* mNode;
+        int mPlayer;
+    };
+    
     template< typename Move >
     class Node
     {
@@ -104,8 +112,10 @@ namespace mcts
             
             static Node<Move>* SelectNode(Node<Move>* nodes, size_t n);
             
+            typedef std::vector< PlayoutTurn< Node<Move> > > PlayoutStack;
+            
             template< typename GameState > 
-            static int Explore( Node< Move >* node, GameState theGame );
+            static int Explore( Node< Move >* node, GameState theGame, PlayoutStack& stack );
             
             template< typename GameState, typename TimeoutFn > 
             static Move GetMove( GameState theGame, TimeoutFn timeOut );
@@ -191,11 +201,9 @@ namespace mcts
     
     template< typename Move >
     template< typename GameState > 
-    int Node<Move>::Explore( Node< Move >* node, GameState theGame )
+    int Node<Move>::Explore( Node< Move >* node, GameState theGame, PlayoutStack& stack )
     {
-        // play out the game
-        std::vector< std::pair< Node<Move>*, int> > stack;
-        stack.reserve(theGame.TurnsLeft());
+        stack.clear();
         
         do
         {
@@ -208,7 +216,7 @@ namespace mcts
             theGame = theGame.PlayMove( node->mMove );
             
             int p = theGame.GetCurrentPlayer();
-            stack.push_back( std::pair< Node<Move>*, int>( node, p ) );
+            stack.push_back( PlayoutTurn< Node<Move> >( node, p ) );
             
         }while(theGame.Finished()==false);
         
@@ -217,8 +225,8 @@ namespace mcts
         // back propagate the explored nodes
         for (int i=0; i!=stack.size(); ++i)
         {
-            stack[i].first->mSims++;
-            stack[i].first->mWins += (winner==stack[i].second);
+            stack[i].mNode->mSims++;
+            stack[i].mNode->mWins += (winner==stack[i].mPlayer);
         }
         
         return winner;
@@ -232,6 +240,9 @@ namespace mcts
         Node* moveList = GetAllNodes<Move>( theGame, &moveCount );
         Node* best = moveList;
         
+        PlayoutStack stack;
+        stack.reserve(theGame.TurnsLeft());
+        
         if (moveCount>1)
         {
             do
@@ -240,11 +251,10 @@ namespace mcts
             
                 GameState newGame = theGame.PlayMove( trial->mMove );
                 trial->mSims++;
-                if (Explore(trial, newGame)==theGame.GetCurrentPlayer())
+                if (Explore(trial, newGame, stack)==theGame.GetCurrentPlayer())
                 {
                     trial->mWins++;
-                    if (trial->Ratio() > 
-                        best->Ratio())
+                    if (trial->Ratio() > best->Ratio())
                         best = trial;
                 }
                 
@@ -252,6 +262,7 @@ namespace mcts
         }
         
         // printf("%i / %i\n", CountTrials(moveList, moveCount), CountNodes(moveList, moveCount));
+        // printf("%i%% of %i\n", static_cast<int>(best->Ratio()*100), best->mSims);
         
         Move result = best->mMove;
         Cleanup( moveList, moveCount );
